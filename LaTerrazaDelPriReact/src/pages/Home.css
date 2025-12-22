@@ -1,0 +1,14 @@
+.home-content{
+    background-color: var(--background-color);
+}
+.home-error{
+    padding: 1rem;
+    text-align: center;
+    color: #c0392b;
+    padding: 155px 25px;
+    font-weight: 500;
+    font-size: 1.5rem;
+    outline: 2px solid #c0392b;
+    outline-offset: -10px;
+    background: var(--background-color);
+}

@@ -1,0 +1,121 @@
+.footer{
+    background: var(--text-color);
+    color: var(--primary-color);
+    padding: 1rem 0;
+    margin-top: 2rem;
+}
+
+.footer hr{
+    border: none;
+    border-top: 2px solid var(--primary-color);
+    margin: 35px 20px;
+}
+
+.footer-content{
+    display: flex;
+    margin: 30px 55px;
+    gap: 25px;
+    justify-content: flex-start;
+}
+
+.footer-logo{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-logo img{
+    height: 100px;
+}
+
+.footer h3{
+    margin: 0;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.footer p{
+    font-size: .8rem;
+    text-align: center;
+}
+
+.footer-section{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+}
+
+.footer-section li{
+    list-style: "- ";
+    font-size: 1rem;
+    cursor: default;
+}
+
+.footer-section a{
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+.footer-section a:hover{
+    text-decoration: underline;
+}
+
+.footer-bottom{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.footer-bottom p{
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.footer-credit {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.footer-credit img, .footer-credit svg{
+    height: 20px;
+    vertical-align: middle;
+}
+
+.footer-copyright {
+    padding: 0 15px;
+}
+
+/* Dispositivos Móviles (hasta 768px) */
+@media only screen and (max-width: 768px) and (min-width: 320px) {
+    .footer-content{
+        display: grid;
+        justify-content: center;
+    }
+    .footer-logo img{
+        height: 80px;
+    }
+    .footer-bottom{
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+/* Tabletas (desde 600px hasta 1024px) */
+@media only screen and (min-width: 600px) and (max-width: 1024px) {
+    .footer-content{
+        display: grid;
+        justify-content: center;
+    }
+    .footer-bottom{
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+/* Escritorio (desde 1024px en adelante) */
+@media only screen and (min-width: 1024px) {
+
+}

@@ -1,0 +1,115 @@
+.banner-slider {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+}
+
+.banner-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.6s ease-in-out;
+}
+
+
+.banner-slide {
+    min-width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* botones */
+.nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.85);
+    border: none;
+    font-size: 2rem;
+    width: 48px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+.nav.left {
+    left: 1rem;
+}
+
+.nav.right {
+    right: 1rem;
+}
+
+.banner-dots {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+}
+
+.dot {
+    width: 10px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 1);
+    cursor: pointer;
+}
+
+.dot.active {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.banner-error{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 2.5rem;
+    text-align: center;
+}
+
+/* Dispositivos Móviles (hasta 768px) */
+@media only screen and (max-width: 768px) {
+    .banner-error {
+        font-size: 1.5rem;
+    }
+    .nav{
+        width: 36px;
+        font-size: 1.5rem;
+    }
+    .dot{
+        width: 8px;
+    }
+}
+
+/* Tabletas (desde 600px hasta 1024px) */
+@media only screen and (min-width: 600px) and (max-width: 1024px) {
+    .nav{
+        width: 46px;
+        font-size: 1.5rem;
+    }
+    .dot{
+        width: 9px;
+    }
+}
+
+/* Escritorio (desde 1024px en adelante) */
+@media only screen and (min-width: 1024px) {
+    .banner-slider{
+        width: 80%;
+        margin: 0 auto;
+    }
+}

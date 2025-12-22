@@ -1,0 +1,12 @@
+.header {
+    position: relative;
+    background-color: var(--primary-color);
+}
+
+.header-content {
+    position: absolute;
+    bottom: 2rem;
+    left: 1rem;
+    color: white;
+    max-width: 500px;
+}
