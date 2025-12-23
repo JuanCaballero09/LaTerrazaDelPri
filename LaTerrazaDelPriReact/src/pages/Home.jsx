@@ -20,8 +20,8 @@ export default function Home () {
             
             <Header banners={banners} loading={bannersLoading} error={bannersError} />
             <section className='home-content'>
-                <ComboGrid combos={combos} loading={combosLoading} error={combosError} />
-                <CategoryGrid categories={categorias} loading={categoriasLoading} error={categoriasError} />
+                <ComboGrid combos={combos} loading={combosLoading} error={combosError} length={4} />
+                <CategoryGrid categories={categorias} loading={categoriasLoading} error={categoriasError} length={4} />
                 {(combosError || categoriasError) && <p className='home-error'><LoadingDots text='Error al cargar los datos intentando reconectar' color='#c0392b'/></p>}
             </section>
 

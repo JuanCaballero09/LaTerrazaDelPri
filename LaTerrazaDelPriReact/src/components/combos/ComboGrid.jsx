@@ -1,9 +1,10 @@
+import { Link } from 'react-router-dom'
 import CardSkeleton from '../ui/Skeletons/CardSkeleton'
 import ComboCard from './ComboCard'
 
 import './ComboGrid.css'
 
-export default function ComboGrid ({ combos, loading, error }) {
+export default function ComboGrid ({ combos, loading, error, length = null }) {
     if (error) {
         return (
         <p className="combo-error hidden">
@@ -12,22 +13,31 @@ export default function ComboGrid ({ combos, loading, error }) {
         )
     }
 
-    if (loading && combos.length === 0) {
-        return <CardSkeleton cards={3} />
-    }
+    const visibleCombos = length
+        ? combos.slice(0, length)
+        : combos
 
     return (
         <>
             <h1 className='combo-title'>Combos</h1>
             <section className="combo-grid">
-            {(loading ? Array.from({ length: 3 }) : combos).map((combo, index) => (
-                <ComboCard
-                key={combo?.id || index}
-                combo={combo}
-                loading={loading}
-                />
-            ))}
+            {loading
+                ? Array.from({ length: length || 4 }).map((_, index) => (
+                    <CardSkeleton key={index} />
+                    ))
+                : visibleCombos.map(combo => (
+                    <ComboCard
+                        key={combo.id}
+                        combo={combo}
+                        loading={false}
+                    />
+                    
+                    ))
+            }
             </section>
+            {length && combos.length > length && !loading && (
+                <Link to="/combos" className='combo-more'>Ver más combos</Link>
+            )}
         </>
     )
 }

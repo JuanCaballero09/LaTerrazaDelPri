@@ -11,7 +11,8 @@ html, body{
 
 :root{
     --primary-color: #FFC107;
-    --secondary-color: #4CAF50;
+    --primary-color-hover: #FFB300;
+    --secondary-color: #FF5722;
     --background-color: #F8F9FA;
     --text-color: #1A1A1A;
     --background-color-dark: #1A1A1A;

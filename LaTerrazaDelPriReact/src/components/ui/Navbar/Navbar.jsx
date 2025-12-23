@@ -26,7 +26,7 @@ export default function Navbar () {
 
                     <ul className='navbar-links'>
                         <Link to='/' className='navbar-link'>Home</Link>
-                        <Link to='/status' className='navbar-link'>Status</Link>
+                        <Link to='/categorias' className='navbar-link'>Categorias</Link>
                     </ul>
 
                     <button className='navbar-burger' onClick={() => setOpen(!open)}>
@@ -43,7 +43,7 @@ export default function Navbar () {
                 <button className="close" onClick={() => setOpen(false)}>×</button>
 
                 <Link to="/" onClick={() => setOpen(false)}>Home</Link>
-                <Link to="/status" onClick={() => setOpen(false)}>Status</Link>
+                <Link to="/categorias" onClick={() => setOpen(false)}>Categorias</Link>
             </aside>
         </>
     )
