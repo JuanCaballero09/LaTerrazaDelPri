@@ -1,32 +1,3 @@
-.categoriaIndex-error{
-    min-height: 80dvh;
-    background: var(--background-color);
-    font-size: 1.5rem;
-    display: flex;
-    height: 100%;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: #c0392b;
-    padding: 155px 25px;
-    font-weight: 500;
-    outline: 2px solid #c0392b;
-    outline-offset: -10px;
-    border-radius: 16px;
-} 
-
-.categoriaShow-error{
-    min-height: 80dvh;
-    background: var(--background-color);
-    color: var(--text-color);
-    font-size: 1.5rem;
-    display: flex;
-    height: 100%;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-}
 
 .categoriaShow-loading{
     display: flex;

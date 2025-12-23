@@ -1,0 +1,102 @@
+/* Base skeleton animado */
+.skeleton {
+	background: linear-gradient(
+		90deg,
+		#ececec 25%,
+		#f5f5f5 50%,
+		#ececec 75%
+	);
+	background-size: 200% 100%;
+	animation: skeleton-loading 1.2s infinite linear;
+	border-radius: 8px;
+}
+
+/* Card skeleton (clona combo-card) */
+.card-skeleton {
+	background: #fff;
+	border-radius: 12px;
+	padding: 1rem;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+/* Imagen */
+.card-skeleton .image-skeleton {
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	border-radius: 8px;
+}
+
+/* Título */
+.card-skeleton .title-skeleton {
+	height: 1.5rem;
+	width: 60%;
+	margin-top: 0.5rem;
+}
+
+/* Precio / texto corto */
+.card-skeleton .text-skeleton {
+	height: 3.5rem;
+	width: 100%;
+}
+
+.banner-skeleton {
+    background: linear-gradient(
+        90deg,
+        #e5e7eb 25%,
+        #f3f4f6 37%,
+        #e5e7eb 63%
+    );
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+    aspect-ratio: 16 / 9;
+}
+
+.page-skeleton{
+    padding: 20px;
+    background-color: var(--background-color);
+    min-height: 80vh;
+}
+
+.page-skeleton-img-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.page-skeleton-img {
+    width: 100%;
+    max-width: 600px;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    outline: 3px solid var(--text-color);
+    outline-offset: 5px;
+    outline-style: dashed;
+}
+
+.page-skeleton-content{
+    height: 50dvh;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+
+@keyframes skeleton-loading {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}
+
+
+@keyframes shimmer {
+    0% { background-position: 100% 0 }
+    100% { background-position: 0 0 }
+}

@@ -18,6 +18,7 @@ export default function AppRouter () {
             <Route path='/categorias' element={<CategoriaIndex />} />
             <Route path='/categoria/:id' element={<CategoriaShow />} />
             <Route path='/categoria/:id/productos' element={<ProductoCategoriaIndex />} />
+            {/* <Route path='/categoria/:categoria/productos' element={<ProductoCategoriaIndex />} /> */}
             
             <Route path='/status' element={<Status />} />
             <Route path='*' element={<Navigate to='/' />} />

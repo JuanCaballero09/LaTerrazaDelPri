@@ -1,26 +1,33 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { getCategoria } from "../../api/categorias.api";
 
-export default function useCategoriaShow() {
-    const [categoria, setCategoria ] = useState(null)
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(false)
+export default function useCategoriaShow(id) {
+    const [categoria, setCategoria] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
-    const fetchCategoria = (id) => {
-        
-        setLoading(true)
+    const retryRef = useRef(null);
+
+    const fetchCategoria = () => {
+        if (!id) return;
+
+        setLoading(true);
 
         getCategoria(id)
             .then(res => {
-                setCategoria(res.data)
-                setError(false)
-                setLoading(false)
-            })
-            .catch(()=> {
-                setError(true)
-                setLoading(false)
-            })
-        }
+                setCategoria(res.data);
+                setError(false);
+                setLoading(false);
 
-    return { categoria, loading, error, fetchCategoria }
+                if (retryRef.current) {
+                    clearInterval(retryRef.current);
+                    retryRef.current = null;
+                }
+            })
+            .catch(() => {
+                setError(true);
+            })
+    };
+
+    return { categoria, loading, error, fetchCategoria};
 }

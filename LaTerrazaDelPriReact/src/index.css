@@ -29,6 +29,28 @@ html, body{
     min-height: 80dvh;
 }
 
+.page-error{
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 20px;
+    border-radius: 16px;
+    text-align: center;
+    color: var(--text-color);
+    padding: 155px 25px;
+    font-weight: 500;
+    font-size: 1.5rem;
+    outline-offset: -10px;
+    background: var(--background-color);
+    height: 100%;
+}
+
+.page-error hr{
+    width: 80%;
+    margin: 0 auto;
+    border: 1px solid var(--primary-color);
+}
+
 /* Dispositivos Móviles (hasta 768px) */
 @media only screen and (max-width: 768px) {
 

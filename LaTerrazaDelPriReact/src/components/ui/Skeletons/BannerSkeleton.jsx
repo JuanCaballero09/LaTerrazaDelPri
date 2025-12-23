@@ -1,4 +1,4 @@
-import './BannerSkeleton.css'
+import './Skeleton.css'
 
 export default function BannerSkeleton () {
     return <div className='banner-skeleton' />

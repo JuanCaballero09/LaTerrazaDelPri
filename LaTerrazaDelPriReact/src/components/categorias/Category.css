@@ -36,6 +36,29 @@
     border-radius: 8px;
 }
 
+
+.category-no-data {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+    color: var(--text-color);
+    height: 550px;
+}
+
+.category-no-data svg{
+    aspect-ratio: 1 / 1;
+    color: var(--secondary-color);
+}
+
+.category-no-data p{
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 500;
+}
+
 .category-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

@@ -12,8 +12,6 @@ import ComboGrid from '../../components/combos/ComboGrid'
 import CategoryGrid from '../../components/categorias/CategoryGrid'
 
 
-import './Home.css'
-
 export default function Home () {
     
     const { banners, loading: bannersLoading, error: bannersError } = useBanners()
@@ -27,7 +25,12 @@ export default function Home () {
             <section className='page-content'>
                 <ComboGrid combos={combos} loading={combosLoading} error={combosError} length={4} />
                 <CategoryGrid categories={categorias} loading={categoriasLoading} error={categoriasError} length={4} description={false} />
-                {(combosError || categoriasError) && <p className='home-error'><LoadingDots text='Error al cargar los datos intentando reconectar' color='#c0392b'/></p>}
+                {(combosError || categoriasError) && 
+                    <div className='page-error'>
+                        <p>Error al cargar los datos. Por favor, inténtalo de nuevo más tarde.</p>
+                        <hr />
+                        <LoadingDots text='Intentando reconectar' color='var(--primary-color)'/>
+                    </div>}
             </section>
 
         </MainLayout>

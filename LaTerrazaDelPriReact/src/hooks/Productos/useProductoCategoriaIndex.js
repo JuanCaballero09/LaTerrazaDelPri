@@ -10,21 +10,33 @@ export default function useProductosPorCategoria () {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(false)
 
-    useEffect(() => {
-        if (!id) return;
-
+    const fetchProductos = () => {
         getProductsByCategoria(id)
             .then(res => {
                 setProductos(res.data);
                 setError(false);
+                setLoading(false);
             })
             .catch(() => {
                 setError(true);
             })
-            .finally(() => {
-                setLoading(false);
-            });
+    }
+
+    useEffect(() => {
+        if (!id) return;
+
+        fetchProductos();
     }, [id]);
+
+    useEffect(() => {
+        if (!error) return;
+
+        const retryInterval = setInterval(fetchProductos, 3000);
+
+        return () => {
+            clearInterval(retryInterval);
+        };
+    }, [error]);
 
     return { productos, loading, error }
 }

@@ -14,7 +14,12 @@ export default function CategoriaIndex(){
         <MainLayout>
             <section className="page-content">
                 <CategoryGrid categories={categorias} loading={categoriasLoading} error={categoriasError} />
-                {(categoriasError) && <p className='categoriaIndex-error'><LoadingDots text='Error al cargar los datos intentando reconectar' color='#c0392b'/></p>}
+                {(categoriasError) && 
+                <div className='page-error'>
+                    <p>Error al cargar los datos. Por favor, inténtalo de nuevo más tarde.</p>
+                    <hr />
+                    <LoadingDots text='Intentando reconectar' color='var(--primary-color)'/>
+                </div>}
             </section>
         </MainLayout>
     )
