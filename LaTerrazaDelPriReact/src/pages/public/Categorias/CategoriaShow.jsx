@@ -19,7 +19,9 @@ export default function CategoriaShow(){
 
     if (loading) return (
         <MainLayout>
-            <LoadingDots text="Cargando categoría" color="#fff"/>
+            <div className="categoriaShow-loading">
+                <LoadingDots text="Cargando categoría" color="var(--text-color)"/>
+            </div>
         </MainLayout>
     );
     if (error) return (
