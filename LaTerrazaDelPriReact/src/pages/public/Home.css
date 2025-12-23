@@ -4,6 +4,7 @@
 }
 .home-error{
     padding: 1rem;
+    border-radius: 16px;
     text-align: center;
     color: #c0392b;
     padding: 155px 25px;

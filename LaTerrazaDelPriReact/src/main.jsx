@@ -1,12 +1,53 @@
+import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import './index.css'
 import App from './App.jsx'
+import './index.css'
+
+const offlineModal = document.getElementById('offline-modal')
+const preloader = document.getElementById('preloader')
+
+function showOffline() {
+  offlineModal?.classList.add('show')
+}
+
+function hideOffline() {
+  offlineModal?.classList.remove('show')
+}
+
+async function checkConnection() {
+  if (!navigator.onLine) {
+    showOffline()
+    return
+  }
+
+  try {
+    await fetch('/api/v1/health', { cache: 'no-store' })
+    hideOffline()
+  } catch {
+    showOffline()
+  }
+}
 
 
+window.addEventListener('online', checkConnection)
+window.addEventListener('offline', showOffline)
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>,
+const root = ReactDOM.createRoot(document.getElementById('root'))
+
+root.render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
 )
+
+window.addEventListener('load', async () => {
+  await checkConnection()
+
+  if (preloader) {
+    preloader.style.opacity = '0'
+    setTimeout(() => preloader.remove(), 300)
+  }
+})

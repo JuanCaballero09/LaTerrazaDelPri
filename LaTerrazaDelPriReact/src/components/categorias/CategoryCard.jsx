@@ -1,10 +1,14 @@
+import { Link } from 'react-router-dom'
+
+import { slugify } from '../../utils/slugify.js'
+
 import './CategoryCard.css'
 import NoImg from '../../assets/images/ImagenNoDisponible4-3.png'
 
 export default function CategoryCard ({ category }) {
     return (
         
-        <div className="category-card">
+        <Link to={`/categoria/${category.id}-${slugify(category.nombre)}`} className="category-card">
             {category.imagen_url === null ? (
                 <img src={NoImg} alt="Imagen no disponible" loading="lazy" />
             ) : (
@@ -14,10 +18,10 @@ export default function CategoryCard ({ category }) {
                     loading="lazy"
                 />
             )
-        }
+            }
 
-        <h3>{category.nombre}</h3>
-        <p>{category.descripcion}</p>
-        </div>
+            <h3>{category.nombre}</h3>
+            <p>{category.descripcion}</p>
+        </Link>
     )
 }

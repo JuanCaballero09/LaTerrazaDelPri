@@ -1,0 +1,23 @@
+.categoria-page {
+    padding: 20px;
+    background-color: var(--background-color);
+    min-height: 80vh;
+}
+
+.categoria-page-img-container{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.categoria-page-img {
+    width: 100%;
+    max-width: 600px;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    outline: 3px solid var(--secondary-color);
+    outline-offset: 5px;
+    outline-style: dashed;
+}

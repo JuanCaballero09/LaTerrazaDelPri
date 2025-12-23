@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
-import { getCategorias } from "../api/categorias.api";
+import { getCategorias } from "../../api/categorias.api";
 
-export function useCategorias () {
+export function useCategoriaIndex () {
     const [categorias, setCategorias ] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(false)

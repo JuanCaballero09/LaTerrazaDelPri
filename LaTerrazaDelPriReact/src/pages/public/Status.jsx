@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import MainLayout from "../layouts/MainLayout";
-import { useHealth } from "../hooks/useHealth";
+import MainLayout from "../../layouts/MainLayout";
+import { useHealth } from "../../hooks/useHealth";
 import { OrbitProgress } from "react-loading-indicators";
 
 

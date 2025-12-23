@@ -8,7 +8,8 @@
     flex-direction: column;
     gap: 0.5rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-
+    text-decoration: none;
+    color: var(--text-color);
 }
 
 .category-card:hover {

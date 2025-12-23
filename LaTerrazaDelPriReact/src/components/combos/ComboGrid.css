@@ -3,6 +3,8 @@
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.25rem;
     padding: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .combo-error {
@@ -22,14 +24,21 @@
 .combo-more{
     display: block;
     text-align: center;
-    margin: 1.5rem 0;
+    margin: 1.5rem auto;
     border-radius: 16px;
     padding: 1rem 2rem;
     width: fit-content;
-    margin: 0 auto;
     text-decoration: none;
     color: var(--text-color);
     font-size: 1.2rem;
     font-weight: 600;
     background-color: var(--primary-color);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.combo-more:hover{
+    background-color: var(--primary-color-hover);
+    transform: translateY(-0.2rem);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }

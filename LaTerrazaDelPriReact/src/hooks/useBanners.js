@@ -33,9 +33,7 @@ export function useBanners (){
     useEffect(() => {
         if (!error) return
 
-        retryRef.current = setInterval(() => {
-            fetchBanners()
-        }, 3000)
+        retryRef.current = setInterval(fetchBanners(), 3000)
 
         return () => clearInterval(retryRef.current)
 

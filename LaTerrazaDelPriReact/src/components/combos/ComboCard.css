@@ -28,7 +28,8 @@
 }
 
 .combo-price {
-    color: var(--primary-color);
+    color: var(--secondary-color);
     font-weight: 600;
     font-size: 1.3rem;
+    margin: 0.5rem 0;
 }

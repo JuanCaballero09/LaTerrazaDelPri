@@ -12,10 +12,11 @@ html, body{
 :root{
     --primary-color: #FFC107;
     --primary-color-hover: #FFB300;
-    --secondary-color: #FF5722;
+    --secondary-color: #FFB507;
     --background-color: #F8F9FA;
-    --text-color: #1A1A1A;
     --background-color-dark: #1A1A1A;
+    --text-color: #1A1A1A;
+    --text-color-white: #F8F9FA;
 }
 
 .hidden {

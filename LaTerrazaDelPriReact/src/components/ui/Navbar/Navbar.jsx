@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { House, Blocks } from 'lucide-react'
+
 import logo from '../../../assets/icons/LogoTerrazaDelPri.svg'
 import './Navbar.css'
+
 
 export default function Navbar () {
     const [open, setOpen] = useState(false)
@@ -42,8 +45,8 @@ export default function Navbar () {
             <aside className={`side-menu ${open ? 'open' : ''}`}>
                 <button className="close" onClick={() => setOpen(false)}>×</button>
 
-                <Link to="/" onClick={() => setOpen(false)}>Home</Link>
-                <Link to="/categorias" onClick={() => setOpen(false)}>Categorias</Link>
+                <Link to="/" onClick={() => setOpen(false)}><House />Home</Link>
+                <Link to="/categorias" onClick={() => setOpen(false)}><Blocks />Categorias</Link>
             </aside>
         </>
     )

@@ -1,19 +1,24 @@
 
-import MainLayout from '../layouts/MainLayout'
-import Header from '../components/ui/Header/Header'
-import { useBanners } from '../hooks/useBanners'
-import { useCombos } from '../hooks/useCombos'
-import { useCategorias } from '../hooks/useCategorias'
-import ComboGrid from '../components/combos/ComboGrid'
-import CategoryGrid from '../components/categorias/CategoryGrid'
+
+import MainLayout from '../../layouts/MainLayout'
+import Header from '../../components/ui/Header/Header'
+import LoadingDots from '../../components/ui/LoadingDots'
+
+import { useBanners } from '../../hooks/useBanners'
+import { useCombos } from '../../hooks/useCombos'
+import { useCategoriaIndex } from '../../hooks/Categorias/useCategoriaIndex'
+
+import ComboGrid from '../../components/combos/ComboGrid'
+import CategoryGrid from '../../components/categorias/CategoryGrid'
+
+
 import './Home.css'
-import LoadingDots from '../components/ui/LoadingDots'
 
 export default function Home () {
-    // const apiStatus = useHealth()
+    
     const { banners, loading: bannersLoading, error: bannersError } = useBanners()
     const { combos, loading: combosLoading, error: combosError } = useCombos()
-    const { categorias, loading: categoriasLoading, error: categoriasError } = useCategorias()
+    const { categorias, loading: categoriasLoading, error: categoriasError } = useCategoriaIndex()
     
     return (
         <MainLayout>
