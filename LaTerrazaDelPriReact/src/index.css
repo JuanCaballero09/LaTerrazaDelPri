@@ -23,6 +23,12 @@ html, body{
     display: none;
 }
 
+.page-content{
+    background: var(--background-color);
+    padding: 1.5rem 0;
+    min-height: 80dvh;
+}
+
 /* Dispositivos Móviles (hasta 768px) */
 @media only screen and (max-width: 768px) {
 

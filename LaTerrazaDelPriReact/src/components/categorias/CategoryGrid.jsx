@@ -1,14 +1,32 @@
 import { Link } from 'react-router-dom'
-import CardSkeleton from '../ui/Skeletons/CardSkeleton'
-import CategoryCard from './CategoryCard'
-import './CategoryGrid.css'
 
-export default function CategoryGrid ({ categories, loading, error, length = null }) {
+import CategoryCard from './CategoryCard'
+import CardSkeleton from '../ui/Skeletons/CardSkeleton'
+import './Category.css'
+
+export default function CategoryGrid ({ categories, loading, error, length = null, description = true }) {
+
     if (error) {
         return (
         <p className="category-error hidden">
             Error al cargar las categorías
         </p>
+        )
+    }
+
+    if (categories.length === 0) {
+        return (
+            <div className="category-no-data">
+                <p>No hay categorías disponibles.</p>
+            </div>
+        )
+    }
+
+    if (categories.every(category => category.Prodcantidad === 0)) {
+        return (
+            <div className="category-no-data">
+                <p>No hay categorías con productos disponibles.</p>
+            </div>
         )
     }
 
@@ -22,16 +40,17 @@ export default function CategoryGrid ({ categories, loading, error, length = nul
             <h1 className='category-title'>Categorías</h1>
             <section className="category-grid">
             {loading
-                ? Array.from({ length: length || 4 }).map((_, index) => (
+                ? Array.from({ length: length || 8 }).map((_, index) => (
                     <CardSkeleton key={index} />
-                    ))
+                ))
                 : visibleCategories.map(category => (
                     <CategoryCard
                         key={category.id}
                         category={category}
                         loading={false}
+                        description={description}
                     />
-                    ))
+                ))
             }
             </section>
             {length && categories.length > length && !loading && (

@@ -4,21 +4,23 @@ import { Status } from '../pages/public/Status'
 
 import Home  from '../pages/public/Home'
 
-import CategoriaShow from '../pages/public/Categorias/CategoriaShow'
-import CategoriaIndex from '../pages/public/Categorias/CategoriaIndex'
+import CategoriaShow from '../pages/public/Categorias/Show'
+import CategoriaIndex from '../pages/public/Categorias/Index'
+import ProductoCategoriaIndex from '../pages/public/Categorias/Productos/index'
 
 export default function AppRouter () {
     return (
         <Routes>
             <Route path='/' element={<Home />} />
-            <Route path='*' element={<Navigate to='/' />} />
-            
-            <Route path='/status' element={<Status />} />
-            
             <Route path='/home' element={<Home />} />
+            
 
             <Route path='/categorias' element={<CategoriaIndex />} />
             <Route path='/categoria/:id' element={<CategoriaShow />} />
+            <Route path='/categoria/:id/productos' element={<ProductoCategoriaIndex />} />
+            
+            <Route path='/status' element={<Status />} />
+            <Route path='*' element={<Navigate to='/' />} />
         </Routes>
     )
 }

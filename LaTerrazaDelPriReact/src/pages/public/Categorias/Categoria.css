@@ -1,7 +1,3 @@
-.categorias-page{
-    background-color: var(--background-color);
-}
-
 .categoriaIndex-error{
     min-height: 80dvh;
     background: var(--background-color);

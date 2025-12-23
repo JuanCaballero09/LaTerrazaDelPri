@@ -1,0 +1,102 @@
+.producto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.25rem;
+    padding: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.producto-error {
+    padding: 1rem;
+    text-align: center;
+    color: #c0392b;
+    font-weight: 500;
+}
+
+.producto-no-data {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+    color: var(--text-color);
+    height: 550px;
+}
+
+.producto-no-data svg{
+    aspect-ratio: 1 / 1;
+    color: var(--secondary-color);
+}
+
+.producto-no-data p{
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.producto-title{
+    color: var(--text-color);
+    text-align: center;
+    padding: 20px 0;
+    font-size: 2.5rem;
+}
+
+.producto-more{
+    display: block;
+    text-align: center;
+    margin: 1.5rem auto;
+    border-radius: 16px;
+    padding: 1rem 2rem;
+    width: fit-content;
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 1.2rem;
+    font-weight: 600;
+    background-color: var(--primary-color);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.producto-more:hover{
+    background-color: var(--primary-color-hover);
+    transform: translateY(-0.2rem);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.producto-card {
+    background: var(--background-color);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+}
+
+.producto-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.producto-card img {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.producto-card h3 {
+    font-size: 1.5rem;
+    margin: 0.5rem 0 0;
+}
+
+.producto-price {
+    color: var(--secondary-color);
+    font-weight: 600;
+    font-size: 1.3rem;
+    margin: 0.5rem 0;
+}

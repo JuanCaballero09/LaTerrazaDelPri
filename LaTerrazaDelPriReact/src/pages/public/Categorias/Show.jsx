@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 
 import useCategoriaShow from "../../../hooks/Categorias/useCategoriaShow.js"
 
-import MainLayout from "../../../layouts/MainLayout";
+import MainLayout from "../../../layouts/MainLayout.jsx";
 import CategoriaPage from "../../../components/categorias/CategoryPage.jsx";
 
 import LoadingDots from "../../../components/ui/LoadingDots.jsx";

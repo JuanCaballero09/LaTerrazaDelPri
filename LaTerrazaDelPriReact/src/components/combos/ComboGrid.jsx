@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import CardSkeleton from '../ui/Skeletons/CardSkeleton'
 import ComboCard from './ComboCard'
 
-import './ComboGrid.css'
+import './Combo.css'
 
 export default function ComboGrid ({ combos, loading, error, length = null }) {
     if (error) {

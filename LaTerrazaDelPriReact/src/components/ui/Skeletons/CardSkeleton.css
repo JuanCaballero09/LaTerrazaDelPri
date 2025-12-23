@@ -29,24 +29,25 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
+	align-items: center;
 }
 
 /* Imagen */
-.card-skeleton .skeleton-image {
+.card-skeleton .image-skeleton {
 	width: 100%;
 	aspect-ratio: 4 / 3;
 	border-radius: 8px;
 }
 
 /* Título */
-.card-skeleton .skeleton-title {
-	height: 18px;
-	width: 70%;
+.card-skeleton .title-skeleton {
+	height: 1.5rem;
+	width: 60%;
 	margin-top: 0.5rem;
 }
 
 /* Precio / texto corto */
-.card-skeleton .skeleton-text {
-	height: 14px;
-	width: 40%;
+.card-skeleton .text-skeleton {
+	height: 3.5rem;
+	width: 100%;
 }

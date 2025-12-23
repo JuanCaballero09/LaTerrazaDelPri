@@ -42,3 +42,39 @@
     transform: translateY(-0.2rem);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
+.combo-card {
+    background: var(--background-color);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+}
+
+.combo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.combo-card img {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.combo-card h3 {
+    font-size: 1.5rem;
+    margin: 0.5rem 0 0;
+}
+
+.combo-price {
+    color: var(--secondary-color);
+    font-weight: 600;
+    font-size: 1.3rem;
+    margin: 0.5rem 0;
+}

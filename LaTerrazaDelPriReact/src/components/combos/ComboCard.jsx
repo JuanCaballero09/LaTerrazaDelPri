@@ -1,8 +1,12 @@
-import './ComboCard.css'
+import './Combo.css'
 import NoImg from '../../assets/images/ImagenNoDisponible4-3.png'
 
-export default function ComboCard ({ combo }) {
+export default function ComboCard ({ combo, disponible = true }) {
     const fixedPrecio = parseFloat(combo?.precio).toFixed(2).replace('.', ',').concat(' COP').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    if (!disponible) {
+        return null;
+    }
 
     return (    
         <div className="combo-card">
