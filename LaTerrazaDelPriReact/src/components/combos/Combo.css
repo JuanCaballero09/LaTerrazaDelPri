@@ -53,6 +53,8 @@
     flex-direction: column;
     gap: 0.5rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    color: var(--text-color);
 
 }
 
@@ -77,4 +79,48 @@
     font-weight: 600;
     font-size: 1.3rem;
     margin: 0.5rem 0;
+}
+
+
+.combo-card-actions {
+    margin: 10px auto;
+}
+
+.combo-card-actions .btn{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 1rem 1.2rem;
+    background: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.combo-card-actions .btn:hover {
+    background-color: var(--primary-color-hover);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    transform: scale(1.1);
+}
+
+/* Dispositivos Móviles (hasta 768px) */
+@media only screen and (max-width: 768px) {
+    .combo-card-actions .btn{
+        width: 100%;
+        font-size: 1.3rem;
+    }
+}
+
+/* Tabletas (desde 600px hasta 1024px) */
+@media only screen and (min-width: 600px) and (max-width: 1024px) {
+    .combo-card-actions .btn{
+        font-size: 1.5rem;
+    }
 }

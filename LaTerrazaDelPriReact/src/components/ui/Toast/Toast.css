@@ -1,0 +1,64 @@
+.toast-container{
+    position:fixed;
+    right:50%;
+    transform:translateX(50%);
+    top: 6rem;
+    bottom:auto;
+    z-index:1200;
+    pointer-events: none;
+}
+
+.toast-message{
+    pointer-events: auto;
+    background: var(--primary-color);
+    color: var(--text-color);
+    padding:1rem 2rem;
+    border-radius:14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    font-weight:600;
+    max-width: 30dvw;
+    white-space: wrap;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: capitalize;
+    font-size: 1.2rem;
+    transform: translateY(-18px);
+    transition: all 300ms ease-in-out;
+    animation: toastSlideIn 360ms cubic-bezier(.2,.9,.2,1) forwards;
+}
+
+.toast-message:hover{
+    box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+}
+
+@keyframes toastSlideIn {
+    from { transform: translateY(-100%); opacity: 0 }
+    to   { transform: translateY(0); opacity: 1 }
+}
+
+/* Dispositivos Móviles (hasta 768px) */
+@media only screen and (max-width: 768px) {
+    .toast-container{
+        top: 6rem;
+        width: 90dvw;
+    }
+
+    .toast-message{
+        max-width: 90dvw;
+        font-size: 1rem;
+    }
+}
+
+/* Tabletas (desde 600px hasta 1024px) */
+@media only screen and (min-width: 600px) and (max-width: 1024px) {
+    .toast-container{
+        top: 6rem;
+        width: auto;
+    }
+    
+    .toast-message{
+        max-width: 70dvw;
+        font-size: 1.1rem;
+    }
+}

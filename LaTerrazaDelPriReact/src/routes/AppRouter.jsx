@@ -7,6 +7,8 @@ import Home  from '../pages/public/Home'
 import CategoriaShow from '../pages/public/Categorias/Show'
 import CategoriaIndex from '../pages/public/Categorias/Index'
 import ProductoCategoriaIndex from '../pages/public/Categorias/Productos/index'
+import ProductoShow from '../pages/public/Categorias/Productos/show'
+import CartPage from '../pages/public/Cart'
 
 export default function AppRouter () {
     return (
@@ -18,6 +20,9 @@ export default function AppRouter () {
             <Route path='/categorias' element={<CategoriaIndex />} />
             <Route path='/categoria/:id' element={<CategoriaShow />} />
             <Route path='/categoria/:id/productos' element={<ProductoCategoriaIndex />} />
+            <Route path='/categoria/:categoriaSlug/producto/:productoSlug' element={<ProductoShow />} />
+            
+            <Route path='/carrito' element={<CartPage />} />
             {/* <Route path='/categoria/:categoria/productos' element={<ProductoCategoriaIndex />} /> */}
             
             <Route path='/status' element={<Status />} />
