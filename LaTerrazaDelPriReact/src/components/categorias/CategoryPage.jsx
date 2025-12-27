@@ -18,7 +18,7 @@ export default function CategoriaPage({categoria}){
                 <p>{categoria.descripcion}</p>
                 <hr />
                 <h2>Cantidad de Platillos</h2>
-                <h3>{productos.length}</h3>
+                <h3>{productos.filter(producto => producto.disponible).length}</h3>
             </section>
             <div className='categoria-page-links'>
                 {productos.length === 0 ? null : (

@@ -32,7 +32,7 @@ export default function CategoriaShow() {
         <MainLayout>
             <section className="page-content">
 
-                {loading && <PageSkeleton />}
+                {loading || error && <PageSkeleton />}
 
                 {error && (
                     <section className="page-error">

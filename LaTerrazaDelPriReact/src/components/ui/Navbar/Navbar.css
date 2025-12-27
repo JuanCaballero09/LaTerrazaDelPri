@@ -14,6 +14,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 1rem;
 }
 
 .navbar-logo {
@@ -22,6 +23,10 @@
     display: flex;
     align-items: center;
     gap: 0.8rem;
+    text-decoration: none;
+    width: 100%;
+    max-width: 300px;
+    gap: 1rem;
 }
 
 .navbar-logo img {
@@ -30,7 +35,6 @@
     border: 1px solid var(--primary-color);
     outline: 2px solid var(--primary-color);
     outline-offset: 5px;
-    margin-right: 0.5rem;
 }
 
 .navbar-links {
@@ -38,13 +42,16 @@
     list-style: none;
     gap: 1rem;
     margin: 0 10px;
+    width: fit-content;
+    padding: 0;
+    align-items: flex-end;
 }
 
 .cart-badge{
     position: absolute;
     top: 50%;
     right: -8px;
-    transform: translate(20%, -130%);
+    transform: translate(0%, -120%);
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -68,7 +75,6 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    border: 2px solid var(--primary-color);
     padding: .5rem 1rem;
     border-radius: 16px;
     font-weight: 500;
@@ -173,7 +179,7 @@
     position: relative;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 5px;
     text-decoration: none;
     font-size: 1.5rem;
@@ -202,6 +208,7 @@
 .side-menu .close {
     display: flex;
     z-index: 1000;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
     font-size: 1.5rem;
@@ -219,7 +226,22 @@
 }
 
 .side-menu .cart-badge-mobile {
-    
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 100%;
+    font-size: 1.2rem;
+    background: var(--primary-color);
+    color: var(--text-color);
+    border: 2px solid var(--text-color);
+    transform: translateY(-50%);
+    aspect-ratio: 1 / 1;
+    width: 25%;
+    height: 35px;
+    padding: .5rem;
+    text-align: center;
+    border-radius: 16px;
 }
 
 /* Dispositivos Móviles (hasta 768px) */
@@ -240,11 +262,20 @@
         height: fit-content;
         width: 1.3rem;
     }
-
     .side-menu-header img {
         height: 55px;
     }
     .side-menu-header p {
+        font-size: 1rem;
+    }
+    .side-menu .close {
+        font-size: 1.2rem;
+    }
+    .busqueda-bar{
+        display: none;
+    }
+    .side-menu .cart-badge-mobile {
+        height: 30px;
         font-size: 1rem;
     }
 }
@@ -270,6 +301,16 @@
         height: 70px;
     }
     .side-menu-header p {
+        font-size: 1.3rem;
+    }
+    .side-menu .close {
+        font-size: 1.5rem;
+    }
+    .busqueda-bar{
+        display: none;
+    }
+    .side-menu .cart-badge-mobile {
+        height: 35px;
         font-size: 1.3rem;
     }
 }

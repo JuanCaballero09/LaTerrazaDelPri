@@ -4,6 +4,7 @@ import { House, Blocks, ShoppingCart} from 'lucide-react'
 
 import logo from '../../../assets/icons/LogoTerrazaDelPri.svg'
 import useCart from '../../../hooks/useCart'
+import BusquedaBar from '../buscador/BusquedaBar'
 import './Navbar.css'
 
 
@@ -30,7 +31,9 @@ export default function Navbar () {
                         </Link>
                         La Terraza Del Pri
                     </div>
-
+                    
+                    <BusquedaBar />
+                    
                     <ul className='navbar-links'>
                         <Link to='/' className='navbar-link'>Home</Link>
                         <Link to='/categorias' className='navbar-link'>Categorias</Link>

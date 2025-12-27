@@ -20,7 +20,8 @@ api.interceptors.response.use(
             localStorage.removeItem('token')
         }
 
-        return Promise.reject(error.response)
+        // Rechazar con el Error original mantiene `error.message` y stack.
+        return Promise.reject(error)
     }
 )
 

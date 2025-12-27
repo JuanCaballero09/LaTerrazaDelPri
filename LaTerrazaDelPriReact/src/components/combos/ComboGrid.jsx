@@ -19,24 +19,31 @@ export default function ComboGrid ({ combos, loading, error, length = null }) {
 
     return (
         <>
-            <h1 className='combo-title'>Combos</h1>
-            <section className="combo-grid">
-            {loading
-                ? Array.from({ length: length || 4 }).map((_, index) => (
-                    <CardSkeleton key={index} />
-                    ))
-                : visibleCombos.map(combo => (
-                    <ComboCard
-                        key={combo.id}
-                        combo={combo}
-                        loading={false}
-                    />
-                    
-                    ))
-            }
-            </section>
-            {length && combos.length > length && !loading && (
-                <Link to="/combos" className='combo-more'>Ver más combos</Link>
+            {combos.length === 0 && !loading && (
+                <span></span>
+            )}
+            {combos.length > 0 && (
+                <>
+                <h1 className='combo-title'>Combos</h1>
+                <section className="combo-grid">
+                {loading
+                    ? Array.from({ length: length || 4 }).map((_, index) => (
+                        <CardSkeleton key={index} />
+                        ))
+                    : visibleCombos.map(combo => (
+                        <ComboCard
+                            key={combo.id}
+                            combo={combo}
+                            loading={false}
+                        />
+                        
+                        ))
+                }
+                </section>
+                {length && combos.length > length && !loading && (
+                    <Link to="/combos" className='combo-more'>Ver más combos</Link>
+                )}
+                </>
             )}
         </>
     )

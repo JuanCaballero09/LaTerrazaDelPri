@@ -11,7 +11,10 @@ export default function ComboCard ({ combo, disponible = true }) {
 
     if (!disponible) return null;
 
-    const categoriaPart = `${combo.grupo_id || ''}-${slugify(combo.nombre || '')}`
+    // Usar el nombre del grupo (campo `grupo_nombre` o `combo.grupo.nombre`) para el slug de categoría.
+    // Si no hay nombre de grupo, usar `combo.type` o un fallback genérico para evitar que el slug use el nombre del combo.
+    const categoriaNombre = combo.grupo_nombre || (combo.grupo && combo.grupo.nombre) || combo.type || 'categoria'
+    const categoriaPart = `${combo.grupo_id || ''}-${slugify(categoriaNombre)}`
     const productoPart = `${combo.id}-${slugify(combo.nombre || '')}`
     const to = `/categoria/${categoriaPart}/producto/${productoPart}`
 
