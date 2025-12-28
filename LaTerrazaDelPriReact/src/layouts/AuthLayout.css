@@ -50,6 +50,13 @@
         min-height: auto;
         height: auto;
     }
+    .auth-info h1{
+        font-size: 2rem;
+    }
+    .auth-info img{
+        width: 70dvw;
+        max-width: 150px;
+    }
 }
 
 /* Tabletas (desde 600px hasta 1024px) */

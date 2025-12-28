@@ -237,28 +237,119 @@
     color:var(--primary-color); 
     text-transform: capitalize;
 }
-.producto-badge { background: var(--background-color-dark); color: var(--primary-color); padding: 0.4rem 0.9rem; border-radius: 999px; font-weight:600 }
+.producto-badge { 
+    background: var(--background-color-dark); 
+    color: var(--primary-color); 
+    padding: 0.4rem 0.9rem; 
+    border-radius: 999px; 
+    font-weight:600;
+}
 
-.descripcion-card { background: var(--background-color); padding:1rem 1.25rem; border-radius:12px; border:2px solid var(--primary-color); }
-.descripcion-card h3 { margin:0 0 0.5rem 0; color:var(--primary-color) }
-.producto-desc { margin:0; color:var(--text-color); }
+.descripcion-card { 
+    background: var(--background-color); 
+    padding:1rem 1.25rem; 
+    border-radius:12px; 
+    border:2px solid var(--primary-color); 
+}
 
-.ingredientes-card { margin-top: 1rem; background: var(--background-color); padding:1rem 1.25rem; border-radius:12px; border:1px solid rgba(0,0,0,0.05) }
-.ingredientes-card h4 { margin:0 0 0.7rem 0 }
-.ingredientes-card ul { margin:0; padding-left:1.2rem }
-.ingredientes-card li { margin:0.45rem 0 }
+.descripcion-card h3 { 
+    margin:0 0 0.5rem 0; 
+    color:var(--primary-color) 
+}
+.producto-desc { 
+    margin:0; 
+    color:var(--text-color); 
+}
+
+.ingredientes-card { 
+    margin-top: 1rem; 
+    background: var(--background-color); 
+    padding:1rem 1.25rem; 
+    border-radius:12px; 
+    border:1px solid rgba(0,0,0,0.05); 
+}
+
+.ingredientes-card h4 { 
+    margin:0 0 0.7rem 0 
+}
+
+.ingredientes-card ul { 
+    margin:0; padding-left:1.2rem 
+}
+
+.ingredientes-card li { 
+    margin:0.45rem 0 
+}
 
 /* Componentes (items de un combo) */
-.components-card { margin-top: 1rem; background: var(--background-color); padding:1rem 1.25rem; border-radius:12px; border:1px solid rgba(0,0,0,0.05) }
-.components-card h4 { margin:0 0 0.7rem 0 }
-.components-list { list-style: none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.75rem }
-.component-item { display:flex; gap:0.75rem; align-items:center; padding:0.5rem; border-radius:8px; background: rgba(0,0,0,0.02) }
-.component-item img { width:64px; height:64px; object-fit:cover; border-radius:8px; flex-shrink:0 }
-.component-image-placeholder { width:64px; height:64px; display:flex; align-items:center; justify-content:center; background: linear-gradient(180deg, #f5f5f5, #ededed); color: #777; border-radius:8px }
-.component-info { display:flex; flex-direction:column; gap:0.25rem }
-.component-info strong { font-size:1rem; color:var(--text-color) }
-.component-info span { font-size:0.9rem; color:var(--secondary-text-color, #666) }
-.component-unavailable { margin-top:0.25rem; color:#c0392b; font-weight:700; font-size:0.85rem }
+.components-card { 
+    margin-top: 1rem; 
+    background: var(--background-color); 
+    padding:1rem 1.25rem; 
+    border-radius:12px; 
+    border:1px solid rgba(0,0,0,0.05) 
+}
+.components-card h4 { 
+    margin:0 0 0.7rem 0 
+}
+.components-list { 
+    list-style: none; 
+    margin:0; 
+    padding:0; 
+    display:flex; 
+    flex-direction:column; 
+    gap:0.75rem 
+}
+.component-item { 
+    display:flex; 
+    gap:0.75rem; 
+    align-items:center; 
+    padding:0.5rem; 
+    border-radius:8px; 
+    background: rgba(0,0,0,0.02) 
+}
+
+.component-item img { 
+    width:84px; 
+    aspect-ratio: 1 / 1;
+    object-fit:cover; 
+    border-radius:8px; 
+    flex-shrink:0 
+}
+
+.component-image-placeholder { 
+    width:64px; 
+    height:64px; 
+    display:flex; 
+    align-items:center; 
+    justify-content:center; 
+    background: linear-gradient(180deg, #f5f5f5, #ededed); 
+    color: #777; 
+    border-radius:8px 
+}
+
+.component-info { 
+    display:flex; 
+    flex-direction:column; 
+    gap:0.25rem 
+}
+
+.component-info strong { 
+    font-size:1rem; 
+    color:var(--text-color) 
+}
+
+.component-info span { 
+    font-size:0.9rem; 
+    color:var(--secondary-text-color, #666) 
+}
+
+.component-unavailable { 
+    margin-top:0.25rem; 
+    color:#c0392b; 
+    font-weight:700; 
+    font-size:0.85rem 
+}
 
 /* Dispositivos Móviles (hasta 768px) */
 @media only screen and (max-width: 768px) {

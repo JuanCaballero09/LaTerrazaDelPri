@@ -84,6 +84,10 @@
     vertical-align: middle;
 }
 
+.footer-credit img{
+    filter: brightness(2) saturate(1.5);
+}
+
 .footer-copyright {
     padding: 0 15px;
 }

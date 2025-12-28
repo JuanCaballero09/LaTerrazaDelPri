@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Package, ShoppingBag, MapPin, Settings, ChevronRight } from 'lucide-react'
+import { Gauge , Users, Package, ShoppingBag, MapPin, Settings, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import useAuth from '../../../hooks/useAuth'
 import MainLayout from '../../../layouts/MainLayout'
@@ -44,7 +44,7 @@ export default function AdminDashboard () {
         <section className='page-content'>
             <div className='dashboard-container'>
                 <div className='dashboard-header'>
-                    <LayoutDashboard size={64} />
+                    <Gauge size={64 } />
                     <div>
                         <h1>Dashboard Administrativo</h1>
                         <p>Bienvenido, {user?.nombre} - {user?.rol}</p>

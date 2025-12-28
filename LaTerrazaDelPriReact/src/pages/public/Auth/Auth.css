@@ -2,6 +2,7 @@
     background: var(--background-color);
     padding: 1rem 2rem;
     display: flex;
+    margin: 0;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -142,8 +143,10 @@
         grid-template-columns: 1fr;
     }
 
-    .auth-page-container {
-        
+    .auth-page-container{
+        flex: 1;
+        width: 100%;
+        min-height: auto;
     }
 
     .auth-page-container p{
