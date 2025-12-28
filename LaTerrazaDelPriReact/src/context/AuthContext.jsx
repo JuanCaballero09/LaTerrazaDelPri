@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import * as authApi from '../api/auth.api'
 import { useNavigate } from 'react-router-dom'
 
@@ -124,6 +124,7 @@ export function AuthProvider ({ children }) {
     )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuthContext () {
     return useContext(AuthContext)
 }

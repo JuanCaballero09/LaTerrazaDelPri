@@ -5,6 +5,7 @@ import MainLayout from '../../../layouts/MainLayout'
 import './Perfil.css'
 
 export default function Configuracion () {
+    // eslint-disable-next-line no-unused-vars
     const { user, logout } = useAuth()
     const [form, setForm] = useState({
         nombre: user?.nombre || '',

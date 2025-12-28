@@ -130,3 +130,157 @@
     transform: scale(1.1);
 }
 
+
+/* Producto show page styles */
+.producto-show {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 2.5rem;
+    max-width: 1200px;
+    margin: 2.5rem auto;
+    padding: 2rem;
+}
+
+.producto-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+.producto-image-wrap {
+    background: var(--background-color);
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.producto-image-wrap img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.price-card {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-color-hover));
+    color: var(--text-color);
+    padding: 1.25rem;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.price-card .price-label {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.price-card .price-value {
+    display: block;
+    color: var(--text-color);
+    font-size: 1.8rem;
+    margin-top: 0.5rem;
+}
+
+.add-to-cart { 
+    text-align: center;
+}
+
+.add-to-cart .btn {
+    cursor: pointer;
+    width: 100%;
+    padding: 0.9rem 1rem;
+    border-radius: 24px; 
+    border: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    background-color: var(--primary-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-color);
+}
+
+.add-to-cart .btn:hover {
+    background-color: var(--primary-color-hover);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    transform: scale(1.05);
+}
+
+.add-to-cart .btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--background-color-gray-light);
+    transform: none;
+    box-shadow: none;
+}
+
+.producto-right { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 1.5rem; 
+}
+
+.producto-header { 
+    display: flex; 
+    align-items: center; 
+    gap: 1rem; 
+    justify-content: space-between;
+}
+
+.producto-title { 
+    margin:0; 
+    font-size:2.1rem; 
+    color:var(--primary-color); 
+    text-transform: capitalize;
+}
+.producto-badge { background: var(--background-color-dark); color: var(--primary-color); padding: 0.4rem 0.9rem; border-radius: 999px; font-weight:600 }
+
+.descripcion-card { background: var(--background-color); padding:1rem 1.25rem; border-radius:12px; border:2px solid var(--primary-color); }
+.descripcion-card h3 { margin:0 0 0.5rem 0; color:var(--primary-color) }
+.producto-desc { margin:0; color:var(--text-color); }
+
+.ingredientes-card { margin-top: 1rem; background: var(--background-color); padding:1rem 1.25rem; border-radius:12px; border:1px solid rgba(0,0,0,0.05) }
+.ingredientes-card h4 { margin:0 0 0.7rem 0 }
+.ingredientes-card ul { margin:0; padding-left:1.2rem }
+.ingredientes-card li { margin:0.45rem 0 }
+
+/* Componentes (items de un combo) */
+.components-card { margin-top: 1rem; background: var(--background-color); padding:1rem 1.25rem; border-radius:12px; border:1px solid rgba(0,0,0,0.05) }
+.components-card h4 { margin:0 0 0.7rem 0 }
+.components-list { list-style: none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.75rem }
+.component-item { display:flex; gap:0.75rem; align-items:center; padding:0.5rem; border-radius:8px; background: rgba(0,0,0,0.02) }
+.component-item img { width:64px; height:64px; object-fit:cover; border-radius:8px; flex-shrink:0 }
+.component-image-placeholder { width:64px; height:64px; display:flex; align-items:center; justify-content:center; background: linear-gradient(180deg, #f5f5f5, #ededed); color: #777; border-radius:8px }
+.component-info { display:flex; flex-direction:column; gap:0.25rem }
+.component-info strong { font-size:1rem; color:var(--text-color) }
+.component-info span { font-size:0.9rem; color:var(--secondary-text-color, #666) }
+.component-unavailable { margin-top:0.25rem; color:#c0392b; font-weight:700; font-size:0.85rem }
+
+/* Dispositivos Móviles (hasta 768px) */
+@media only screen and (max-width: 768px) {
+    .producto-show { 
+        grid-template-columns: 1fr; 
+        padding: 1rem; 
+        gap: 1.25rem
+    }
+    .add-to-cart .btn {
+        font-size: 1.2rem;
+        padding: 1rem 1.5rem;
+        width: fit-content;
+        margin: 1.5rem auto;
+    }
+    .producto-header {
+        flex-direction: column;
+    }
+}
+
+/* Tabletas (desde 600px hasta 1024px) */
+@media only screen and (min-width: 600px) and (max-width: 1024px) {
+    .producto-header {
+        flex-direction: row;
+    }
+}

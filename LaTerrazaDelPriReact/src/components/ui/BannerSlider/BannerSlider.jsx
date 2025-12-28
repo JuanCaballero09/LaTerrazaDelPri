@@ -41,7 +41,7 @@ export default function BannerSlider ({ banners = [], error }) {
                 <div className='banner-error'>
                     <h3>Error al cargar los banners</h3>
                     <LoadingDots />
-                    <img src="" alt="" />
+                    <img src="" alt="" draggable="false" onContextMenu={e => e.preventDefault()} />
                 </div>
             )}
 
@@ -54,6 +54,8 @@ export default function BannerSlider ({ banners = [], error }) {
                         className='banner-slide'
                         src={banner.imagen_url}
                         alt={`Banner ${index + 1}`}
+                        draggable="false" 
+                        onContextMenu={e => e.preventDefault()}
                     />
                 ))}
             </div>

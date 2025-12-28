@@ -34,7 +34,9 @@ export default function Navbar () {
                                 loading="eager"
                                 fetchpriority="high"
                                 width="45"
-                                height="45"   
+                                height="45"
+                                draggable="false" 
+                                onContextMenu={e => e.preventDefault()} 
                             />
                         </Link>
                         La Terraza Del Pri

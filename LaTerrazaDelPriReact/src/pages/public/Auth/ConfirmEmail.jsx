@@ -15,6 +15,7 @@ export default function ConfirmEmail () {
         const params = new URLSearchParams(search)
         const token = params.get('confirmation_token')
         if (!token) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setError('Token de confirmación no válido')
             return
         }

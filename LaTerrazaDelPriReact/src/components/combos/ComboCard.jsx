@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom'
 import { slugify } from '../../utils/slugify'
 import useCart from '../../hooks/useCart'
 import { CirclePlus } from 'lucide-react'
+import * as productoApi from '../../api/producto.api'
 
 export default function ComboCard ({ combo, disponible = true }) {
-    const { addItem } = useCart()
+    const { addItem, showToast } = useCart()
     const fixedPrecio = parseFloat(combo?.precio).toFixed(2).replace('.', ',').concat(' COP').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
     if (!disponible) return null;
@@ -18,9 +19,33 @@ export default function ComboCard ({ combo, disponible = true }) {
     const productoPart = `${combo.id}-${slugify(combo.nombre || '')}`
     const to = `/categoria/${categoriaPart}/producto/${productoPart}`
 
-    const handleAdd = (e) => {
+    const disabled = combo?.disponible === false
+
+    const handleAdd = async (e) => {
         e.preventDefault()
-        addItem({ id: combo.id, nombre: combo.nombre, precio: combo.precio, imagen_url: combo.imagen_url, ingredientes: combo.ingredientes || [], type: 'combo', grupo_id: combo.grupo_id })
+
+        if (disabled) {
+            showToast('Producto no disponible')
+            return
+        }
+
+        try {
+            const res = await productoApi.getProducto(combo.grupo_id, combo.id)
+            const serverProduct = res?.data
+            if (!serverProduct) {
+                showToast('No se pudo verificar el producto')
+                return
+            }
+
+            if (serverProduct.disponible === false) {
+                showToast('Producto no disponible')
+                return
+            }
+
+            addItem({ id: combo.id, nombre: combo.nombre, precio: combo.precio, imagen_url: combo.imagen_url, ingredientes: combo.ingredientes || [], type: 'combo', grupo_id: combo.grupo_id })
+        } catch (err) {
+            showToast(err?.response?.data?.error || 'Error verificando disponibilidad')
+        }
     }
 
     return (    
@@ -32,6 +57,8 @@ export default function ComboCard ({ combo, disponible = true }) {
                     src={combo.imagen_url}
                     alt={combo.nombre}
                     loading="lazy"
+                    draggable="false" 
+                    onContextMenu={e => e.preventDefault()}
                 />
             )}
 
@@ -39,7 +66,7 @@ export default function ComboCard ({ combo, disponible = true }) {
             <p className="combo-price">${fixedPrecio}</p>
 
             <div className="combo-card-actions">
-                <button className="btn btn-add" onClick={handleAdd}>Agregar<CirclePlus /></button>
+                <button className="btn btn-add" onClick={handleAdd} disabled={disabled}>Agregar<CirclePlus /></button>
             </div>
         </Link>
     )
