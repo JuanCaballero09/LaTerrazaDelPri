@@ -4,11 +4,11 @@ import Toast from '../components/ui/Toast/Toast'
 
 export default function MainLayout ({ children }) {
     return (
-        <>
+        <main>
             <Navbar />
             <Toast />
-            <main>{children}</main>
+            <section>{children}</section>
             <Footer />
-        </>
+        </main>
     )
 }

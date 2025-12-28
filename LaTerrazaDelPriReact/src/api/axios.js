@@ -8,19 +8,33 @@ const api = axios.create({
     }
 })
 
+// Attach token from either sessionStorage or localStorage
+api.interceptors.request.use(
+    config => {
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token')
+        if (token) {
+            // backend expects raw token in Authorization header
+            config.headers['Authorization'] = token
+        }
+        return config
+    },
+    error => Promise.reject(error)
+)
+
 api.interceptors.response.use(
     response => response,
     error => {
         if (!error.response){
-            // console.error("Servidor no disponible")
             return Promise.reject(error)
         }
 
         if (error.response.status === 401) {
             localStorage.removeItem('token')
+            localStorage.removeItem('user')
+            sessionStorage.removeItem('token')
+            sessionStorage.removeItem('user')
         }
 
-        // Rechazar con el Error original mantiene `error.message` y stack.
         return Promise.reject(error)
     }
 )
