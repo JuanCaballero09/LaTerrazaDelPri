@@ -21,7 +21,7 @@ export default function CategoryGrid ({ categories, loading, error, length = nul
                 <h1 className='category-title'>Categorías</h1>
                 <section className="category-grid">
                     {Array.from({ length: length || 8 }).map((_, index) => (
-                        <CardSkeleton key={index} />
+                        <CardSkeleton key={index} btn={false} />
                     ))}
                 </section>
             </>

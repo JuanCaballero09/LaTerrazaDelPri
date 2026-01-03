@@ -1,0 +1,104 @@
+/* Estilos mínimos para el menú y slider por categoría */
+.menu-page {
+	padding: 1.2rem 1rem;
+	margin: 0 auto;
+    width: 100%;
+}
+
+.menu-group {
+	margin-bottom: 2rem;
+}
+
+.menu-group-title {
+	font-size: 1.25rem;
+	margin: 0 0 12px 6px;
+	color: var(--text-color);
+}
+
+.slider {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.slider-btn {
+	background: var(--text-color-light);
+	border: 1px solid var(--text-color);
+	padding: 8px 10px;
+	cursor: pointer;
+	border-radius: 6px;
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+    font-size: 1.5rem;
+    color: var(--text-color);
+}
+
+.slider-track {
+	overflow-x: hidden;
+	display: flex;
+	gap: 1.5rem;
+	scroll-behavior: smooth;
+	-webkit-overflow-scrolling: touch;
+	padding: 8px 4px;
+	flex: 1 1 auto;
+}
+
+.slider-track::-webkit-scrollbar {
+	height: 8px;
+}
+
+.slider-track::-webkit-scrollbar-thumb {
+	background: rgba(0,0,0,0.08);
+	border-radius: 4px;
+}
+
+.slider-track .producto-card {
+	flex: 0 0 auto;
+	width: clamp(200px, 26%, 280px);
+	scroll-snap-align: start;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
+}
+
+.slider-track .card-skeleton{
+    flex: 0 0 auto;
+    width: clamp(200px, 26%, 280px);
+    scroll-snap-align: start;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
+}
+
+.slider-track { scroll-snap-type: x mandatory; }
+
+.menu-group-title.skeleton {
+	background: #e9e9e9;
+	color: transparent;
+	height: 28px;
+	width: 240px;
+	border-radius: 6px;
+	display: inline-block;
+	margin-bottom: 8px;
+}
+
+.producto-card.loading { background: transparent; }
+.producto-card.loading .image-placeholder,
+.producto-card.loading .text-placeholder,
+.producto-card.loading .price-placeholder,
+.producto-card.loading .btn-placeholder {
+	background: #fff;
+}
+
+@media only screen and (max-width: 768px) {
+    .menu-page { padding: 16px 12px; }
+	.slider-btn { width: 35px; height: 35px; text-align: center; font-size: 1.2rem; color: var(--text-color); }
+	.slider-track .producto-card { width: 100%; }
+    .slider-track .card-skeleton { width: 100%; }
+}
+
+/* Tabletas (desde 600px hasta 1024px) */
+@media only screen and (min-width: 600px) and (max-width: 1024px) {
+    .slider-track .producto-card { width: 250px; }
+    .slider-track .card-skeleton { width: 250px; }
+}

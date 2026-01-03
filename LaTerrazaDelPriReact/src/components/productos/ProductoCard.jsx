@@ -1,15 +1,22 @@
 import NoImg from '../../assets/images/ImagenNoDisponible4-3.png'
 import './Producto.css'
+import CardSkeleton from '../ui/Skeletons/CardSkeleton'
+import ImageWithSkeleton from '../ui/Skeletons/ImageWithSkeleton'
 import { Link } from 'react-router-dom'
 import { slugify } from '../../utils/slugify'
 import { CirclePlus } from 'lucide-react'
 import useCart from '../../hooks/useCart'
 import * as productoApi from '../../api/producto.api'
 
-export default function ProductoCard ({ producto, Proddisponible = true }) {
+export default function ProductoCard ({ producto, Proddisponible = true, loading}) {
     const { addItem, showToast } = useCart()
-    const fixedPrecio = parseFloat(producto?.precio).toFixed(2).replace('.', ',').concat(' COP').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    if (!Proddisponible) return null;
+    
+    if (loading) return <CardSkeleton />
+    if (!Proddisponible) return null
+
+    const fixedPrecio = producto && producto.precio != null
+        ? parseFloat(producto.precio).toFixed(2).replace('.', ',').concat(' COP').replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+        : '0,00 COP'
 
     const categoriaPart = `${producto.grupo_id}-${slugify(producto.nombre || '')}`
     const productoPart = `${producto.id}-${slugify(producto.nombre || '')}`
@@ -44,17 +51,11 @@ export default function ProductoCard ({ producto, Proddisponible = true }) {
 
     return (
         <Link to={to} className="producto-card">
-            {producto.imagen_url === null ? (
-                <img src={NoImg} alt="Imagen no disponible" loading="lazy" />
-            ) : (
-                <img
-                    src={producto.imagen_url}
-                    alt={producto.nombre}
-                    loading="lazy"
-                    draggable="false" 
-                    onContextMenu={e => e.preventDefault()}
-                />
-            )}
+            <ImageWithSkeleton
+                src={producto.imagen_url}
+                alt={producto.nombre}
+                fallbackSrc={NoImg}
+            />
 
             <h3>{producto.nombre}</h3>
             <p className="producto-price">${fixedPrecio}</p>

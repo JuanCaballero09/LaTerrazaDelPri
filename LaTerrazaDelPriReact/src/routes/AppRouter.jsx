@@ -9,6 +9,8 @@ import ProductoCategoriaIndex from '../pages/public/Categorias/Productos/index'
 import ProductoShow from '../pages/public/Categorias/Productos/show'
 import CartPage from '../pages/public/Cart'
 
+import Menu from '../pages/public/Menu'
+
 // Auth pages
 import Login from '../pages/public/Auth/Login'
 import Register from '../pages/public/Auth/Register'
@@ -37,6 +39,8 @@ export default function AppRouter () {
             <Route path='/categoria/:id' element={<CategoriaShow />} />
             <Route path='/categoria/:id/productos' element={<ProductoCategoriaIndex />} />
             <Route path='/categoria/:categoriaSlug/producto/:productoSlug' element={<ProductoShow />} />
+
+            <Route path='/menu' element={<Menu />} />
             
             <Route path='/carrito' element={<CartPage />} />
             

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { House, Blocks, ShoppingCart, UserRoundPlus, User, LogOut, Gauge} from 'lucide-react'
+import { House, Blocks, ShoppingCart, UserRoundPlus, User, LogOut, Gauge, SquareMenu} from 'lucide-react'
 import logo from '../../../assets/icons/LogoTerrazaDelPri.svg'
 import useCart from '../../../hooks/useCart'
 import useAuth from '../../../hooks/useAuth'
@@ -46,6 +46,7 @@ export default function Navbar () {
                     
                     <ul className='navbar-links'>
                         <Link to='/' className='navbar-link'>Home</Link>
+                        <Link to='/menu' className='navbar-link'>Menu</Link>
                         <Link to='/categorias' className='navbar-link'>Categorias</Link>
                         <Link to='/carrito' className='navbar-link'>
                             <ShoppingCart />
@@ -112,6 +113,7 @@ export default function Navbar () {
                 </header>
                 
                 <Link to="/" onClick={() => setOpen(false)}><House />Home</Link>
+                <Link to="/menu" onClick={() => setOpen(false)}><SquareMenu />Menú</Link>
                 <Link to="/categorias" onClick={() => setOpen(false)}><Blocks />Categorias</Link>
                 
                 <hr />

@@ -2,6 +2,7 @@ import './Combo.css'
 import NoImg from '../../assets/images/ImagenNoDisponible4-3.png'
 import { Link } from 'react-router-dom'
 import { slugify } from '../../utils/slugify'
+import ImageWithSkeleton from '../ui/Skeletons/ImageWithSkeleton'
 import useCart from '../../hooks/useCart'
 import { CirclePlus } from 'lucide-react'
 import * as productoApi from '../../api/producto.api'
@@ -50,17 +51,11 @@ export default function ComboCard ({ combo, disponible = true }) {
 
     return (    
         <Link to={to} className="combo-card">
-            {combo.imagen_url === null ? (
-                <img src={NoImg} alt="Imagen no disponible" loading="lazy" />
-            ) : (
-                <img
-                    src={combo.imagen_url}
-                    alt={combo.nombre}
-                    loading="lazy"
-                    draggable="false" 
-                    onContextMenu={e => e.preventDefault()}
-                />
-            )}
+            <ImageWithSkeleton
+                src={combo.imagen_url}
+                alt={combo.nombre}
+                fallbackSrc={NoImg}
+            />
 
             <h3>{combo.nombre}</h3>
             <p className="combo-price">${fixedPrecio}</p>

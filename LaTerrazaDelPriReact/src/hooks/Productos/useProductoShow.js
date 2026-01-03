@@ -28,6 +28,7 @@ export default function useProductoShow(categoriaId, productoId) {
     }
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchProducto()
         return () => {
             if (retryRef.current) {
@@ -48,7 +49,7 @@ export default function useProductoShow(categoriaId, productoId) {
                 retryRef.current = null
             }
         }
-        }, [error, categoriaId, productoId])
+    }, [error, categoriaId, productoId])
 
     return { producto, loading, error }
 }
