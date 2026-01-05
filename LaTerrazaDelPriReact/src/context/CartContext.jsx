@@ -122,7 +122,8 @@ export function CartProvider({ children }) {
     // Generar clave única para identificar items en el carrito
     // Combina id, type y tamano_selected para diferenciar productos con diferentes tamaños
     const getItemKey = (item) => {
-        const tamano = item.tamano_selected || 'default'
+        // Incluir el tamaño seleccionado en la clave para diferenciar productos con diferentes tamaños
+        const tamano = item.tamano_selected || ''
         return `${item.id}-${item.type || 'Product'}-${tamano}`
     }
 
