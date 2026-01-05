@@ -4,6 +4,7 @@ import './Skeleton.css'
 
 export default function ImageWithSkeleton({ src, alt, fallbackSrc, className = '' }) {
     const [imageLoaded, setImageLoaded] = useState(false)
+    const [imageError, setImageError] = useState(false)
     const imgRef = useRef(null)
     const currentSrc = useRef(src)
 
@@ -12,8 +13,8 @@ export default function ImageWithSkeleton({ src, alt, fallbackSrc, className = '
         // Solo resetear si la URL realmente cambió
         if (currentSrc.current !== src) {
             currentSrc.current = src
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setImageLoaded(false)
+            setImageError(false)
         }
         
         // Verificar si la imagen ya está cargada
@@ -25,8 +26,10 @@ export default function ImageWithSkeleton({ src, alt, fallbackSrc, className = '
                     // Verificar si realmente cargó o falló
                     if (img.naturalWidth > 0 && img.naturalHeight > 0) {
                         setImageLoaded(true)
+                        setImageError(false)
                     } else if (img.naturalWidth === 0) {
-                        // La imagen falló al cargar, usar fallback
+                        // La imagen falló al cargar
+                        setImageError(true)
                         if (fallbackSrc && img.src !== fallbackSrc) {
                             img.src = fallbackSrc
                         }
@@ -49,13 +52,26 @@ export default function ImageWithSkeleton({ src, alt, fallbackSrc, className = '
 
     const handleLoad = () => {
         setImageLoaded(true)
+        setImageError(false)
     }
 
     const handleError = (e) => {
+        console.warn('Error cargando imagen:', src, 'Error:', e)
+        setImageError(true)
         if (e.target && fallbackSrc && e.target.src !== fallbackSrc) {
             e.target.src = fallbackSrc
+        } else {
+            setImageLoaded(true) // Mostrar el placeholder si no hay fallback
         }
-        setImageLoaded(true)
+    }
+
+    // Si no hay src ni fallback, no mostrar nada
+    if (!src && !fallbackSrc) {
+        return (
+            <div className="image-with-skeleton-wrapper">
+                <div className="image-skeleton-placeholder skeleton" />
+            </div>
+        )
     }
 
     return (

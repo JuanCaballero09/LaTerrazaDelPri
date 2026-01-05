@@ -25,7 +25,15 @@ import Ordenes from '../pages/private/Perfil/Ordenes'
 import Direcciones from '../pages/private/Perfil/Direcciones'
 import Configuracion from '../pages/private/Perfil/Configuracion'
 
-// Admin pages
+// Admin Layout & Pages
+import { DashboardLayout } from '../layouts/DashboardLayout'
+import { DashboardMain } from '../pages/private/Dashboard/DashboardMain'
+import { ProductosCRUD } from '../pages/private/Dashboard/ProductosCRUD'
+import { OrdenesCRUD } from '../pages/private/Dashboard/OrdenesCRUD'
+import { BannersCRUD } from '../pages/private/Dashboard/BannersCRUD'
+import { GruposCRUD } from '../pages/private/Dashboard/GruposCRUD'
+import { IngredientesCRUD } from '../pages/private/Dashboard/IngredientesCRUD'
+import { ComingSoon } from '../pages/private/Dashboard/ComingSoon'
 import AdminDashboard from '../pages/private/Dashboard/Admin'
 
 export default function AppRouter () {
@@ -59,8 +67,21 @@ export default function AppRouter () {
             <Route path='/perfil/direcciones' element={<ProtectedRoute><Direcciones /></ProtectedRoute>} />
             <Route path='/perfil/configuracion' element={<ProtectedRoute><Configuracion /></ProtectedRoute>} />
 
-            {/* Admin routes */}
-            <Route path='/dashboard' element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            {/* Admin routes with Dashboard Layout */}
+            <Route path='/admin' element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+                <Route path='dashboard' element={<DashboardMain />} />
+                <Route path='productos' element={<ProductosCRUD />} />
+                <Route path='ordenes' element={<OrdenesCRUD />} />
+                <Route path='grupos' element={<GruposCRUD />} />
+                <Route path='ingredientes' element={<IngredientesCRUD />} />
+                <Route path='usuarios' element={<ComingSoon section="usuarios" />} />
+                <Route path='sedes' element={<ComingSoon section="sedes" />} />
+                <Route path='banners' element={<BannersCRUD />} />
+                <Route index element={<Navigate to='dashboard' replace />} />
+            </Route>
+            
+            {/* Legacy admin route */}
+            <Route path='/dashboard' element={<Navigate to='/admin/dashboard' replace />} />
             
             <Route path='*' element={<Navigate to='/' />} />
         </Routes>
