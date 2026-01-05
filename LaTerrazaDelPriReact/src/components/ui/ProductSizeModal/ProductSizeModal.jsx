@@ -1,10 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import './ProductSizeModal.css';
 
 export default function ProductSizeModal({ isOpen, onClose, product, onAddToCart }) {
     const [selectedSize, setSelectedSize] = useState('');
     const [quantity, setQuantity] = useState(1);
+    
+    // Prevenir scroll del body cuando el modal está abierto
+    useEffect(() => {
+        if (isOpen) {
+            document.body.classList.add('modal-open');
+        } else {
+            document.body.classList.remove('modal-open');
+        }
+        return () => document.body.classList.remove('modal-open');
+    }, [isOpen]);
 
     if (!isOpen || !product) return null;
 

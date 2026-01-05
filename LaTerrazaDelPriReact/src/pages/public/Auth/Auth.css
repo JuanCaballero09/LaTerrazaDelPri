@@ -1,4 +1,4 @@
-.auth-page-container{
+.auth-page-container {
     background: var(--background-color);
     padding: 1rem 2rem;
     display: flex;
@@ -9,6 +9,7 @@
     min-height: 100dvh;
     height: 100%;
     width: 100%;
+    position: relative;
 }
 
 .auth-page-container h2{

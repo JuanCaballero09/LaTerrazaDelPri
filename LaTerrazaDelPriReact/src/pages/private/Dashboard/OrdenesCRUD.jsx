@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDashboardOrders } from '../../../hooks/Dashboard/useDashboardOrders';
 import './Dashboard.css';
 
@@ -18,6 +18,16 @@ export function OrdenesCRUD() {
 
   const stats = getStats();
   const filteredOrdenes = filterOrdenes(searchTerm, filterEstado);
+  
+  // Prevenir scroll del body cuando el modal está abierto
+  useEffect(() => {
+    if (showDetailModal) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => document.body.classList.remove('modal-open');
+  }, [showDetailModal]);
 
   const handleEstadoChange = async (orden, nuevoEstado) => {
     const result = await updateEstado(orden.code, nuevoEstado);

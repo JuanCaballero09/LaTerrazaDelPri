@@ -340,7 +340,7 @@
 
 .search-input {
     width: 100%;
-    padding: 0.75rem 0.75rem 0.75rem 40px;
+    padding: 1rem;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
     font-size: 0.95rem;
@@ -477,6 +477,7 @@
     letter-spacing: 0.5px;
 }
 
+.dashboard-badge-producto { background: #e0e0e0; color: #1a1a1a; }
 .dashboard-badge-pizza { background: #fff3cd; color: #856404; }
 .dashboard-badge-bebida { background: #cfe2ff; color: #084298; }
 .dashboard-badge-acompañante { background: #d1e7dd; color: #0f5132; }
@@ -545,7 +546,7 @@
     background: linear-gradient(135deg, #ffd700, #ffed4e);
     color: var(--text-color);
     border: none;
-    padding: 0.75rem 1.5rem;
+    padding: 1rem 1.5rem;
     border-radius: 8px;
     font-size: 0.95rem;
     font-weight: 600;
@@ -556,6 +557,12 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+}
+
+.dashboard-btn-primary svg {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text-color);
 }
 
 .dashboard-btn-primary:hover:not(:disabled) {
@@ -1001,9 +1008,10 @@
 
 .dashboard-form-group label {
     display: block;
+    justify-content: center;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: #1a1a1a;
+    color: var(--text-color);
     font-size: 0.95rem;
 }
 
@@ -1012,6 +1020,7 @@
 .dashboard-form-group textarea {
     padding: 0.75rem;
     border: 2px solid #e5e5e5;
+    background-color: var(--background-color);
     border-radius: 8px;
     font-size: 1rem;
     transition: all 0.3s ease;
@@ -1084,6 +1093,7 @@
     width: 100%;
     aspect-ratio: 16 / 9;
     background: #f5f5f5;
+    outline: 2px dashed var(--primary-color);
 }
 
 .preview-image {
@@ -1142,7 +1152,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.dashboard-empty-state svg { color: #ccc; margin-bottom: 1rem; }
+
 .dashboard-empty-state p { color: #999; font-size: 1.1rem; margin-bottom: 1.5rem; }
 
 /* ========================================
@@ -1217,7 +1227,6 @@
 .coming-soon-icon {
     font-size: 5rem;
     margin-bottom: 1.5rem;
-    animation: bounce 2s infinite;
 }
 
 .coming-soon-title {
@@ -1501,7 +1510,8 @@
 
 .grupo-imagen {
     width: 100%;
-    height: 180px;
+    height: fit-content;
+    aspect-ratio: 4 / 3 ;
     overflow: hidden;
     border-radius: 8px;
     margin-bottom: 1rem;
@@ -1582,3 +1592,268 @@
     }
 }
 
+
+/* ========================================
+   TAMAÑOS Y PRECIOS POR TAMAÑO
+   ======================================== */
+
+.tamanos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.tamano-item {
+    background: #f9f9f9;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.tamano-item:has(input[type="checkbox"]:checked) {
+    background: #fffbeb;
+    border-color: #ffd700;
+}
+
+.tamano-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+}
+
+.tamano-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.tamano-precio-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.tamano-precio-input:focus {
+    outline: none;
+    border-color: #ffd700;
+}
+
+/* ========================================
+   INGREDIENTES GRID
+   ======================================== */
+
+.ingredientes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.ingrediente-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ingrediente-checkbox:hover {
+    background: #fffbeb;
+    border-color: #ffd700;
+}
+
+.ingrediente-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.ingrediente-checkbox span {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.ingrediente-checkbox input[type="checkbox"]:checked + span {
+    font-weight: 600;
+    color: #000;
+}
+
+
+/* Estilo para tamaños con error (precio faltante) */
+.tamano-item-error {
+    background: #fff5f5 !important;
+    border-color: #ff4444 !important;
+}
+
+.tamano-item-error .tamano-precio-input {
+    border-color: #ff4444;
+}
+
+.tamano-item-error .tamano-precio-input:focus {
+    border-color: #ff0000;
+    box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.1);
+}
+
+/* ========================================
+    SEDES CRUD - GESTIÓN DE SEDES
+   ======================================== */
+
+/* Grid de Sedes */
+.sedes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 24px;
+}
+
+/* Tarjeta de Sede */
+.sede-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.sede-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+}
+
+.sede-card.inactive {
+    opacity: 0.7;
+    border-color: #ffcc00;
+}
+
+.sede-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.sede-card-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.3rem;
+}
+
+.sede-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.sede-info strong {
+    display: block;
+    color: #555;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.sede-info p {
+    margin: 0;
+    color: #333;
+    line-height: 1.5;
+}
+
+.coordinates {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.map-link {
+    display: inline-block;
+    margin-top: 5px;
+    color: #ED5821;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.map-link:hover {
+    color: #d14a1a;
+    text-decoration: underline;
+}
+
+.sede-card-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ========================================
+   FORMULARIO DE SEDE
+   ======================================== */
+
+/* Sección del mapa */
+.map-section {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.map-section h3 {
+    color: #333;
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+}
+
+.map-instruction {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.map-hint {
+    margin-top: 15px;
+    color: #ED5821;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* ========================================
+   RESPONSIVE - SEDES
+   ======================================== */
+
+@media (max-width: 768px) {
+    .sedes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sede-card-actions {
+        flex-direction: column;
+    }
+
+    .map-section h3 {
+        font-size: 1.1rem;
+    }
+
+    .map-instruction,
+    .map-hint {
+        font-size: 0.85rem;
+    }
+}

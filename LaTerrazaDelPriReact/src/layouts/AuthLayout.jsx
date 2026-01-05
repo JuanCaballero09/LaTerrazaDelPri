@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import logo from '../assets/icons/LogoLigth.jpg'
 import './AuthLayout.css'
 
@@ -11,6 +12,9 @@ export default function AuthLayout ({ children }) {
                 <p>Calidad por encima de todo</p>
             </section>
             <section className="auth-page-container">
+                <Link to="/" className="auth-back-btn">
+                    ← Volver al inicio
+                </Link>
                 {children}
             </section>
         </main>

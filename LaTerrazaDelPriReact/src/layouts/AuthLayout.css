@@ -41,6 +41,22 @@
     
 }
 
+.auth-back-btn {
+    padding: 10px 20px;
+    margin: 1.5rem 0 ;
+    background: var(--primary-color);
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background 0.2s;
+    z-index: 10;
+}
+
+.auth-back-btn:hover {
+    background: var(--primary-color-hover);
+}
+
 /* Dispositivos Móviles (hasta 768px) */
 @media only screen and (max-width: 768px) {
     .AuthLayout{

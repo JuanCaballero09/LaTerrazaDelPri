@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDashboardIngredientes } from '../../../hooks/Dashboard/useDashboardIngredientes';
 import { Plus, Edit2, Trash2, X, Leaf } from 'lucide-react';
 import './Dashboard.css';
@@ -24,6 +24,16 @@ export function IngredientesCRUD() {
 
   const stats = getStats();
   const filteredIngredientes = filterIngredientes(searchTerm);
+  
+  // Prevenir scroll del body cuando el modal está abierto
+  useEffect(() => {
+    if (showModal) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => document.body.classList.remove('modal-open');
+  }, [showModal]);
 
   const handleOpenModal = (ingrediente = null) => {
     if (ingrediente) {

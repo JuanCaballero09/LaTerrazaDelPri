@@ -1,0 +1,1 @@
+export { ProductSizeSelector } from './ProductSizeSelector';

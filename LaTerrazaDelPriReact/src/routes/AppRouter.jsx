@@ -33,6 +33,7 @@ import { OrdenesCRUD } from '../pages/private/Dashboard/OrdenesCRUD'
 import { BannersCRUD } from '../pages/private/Dashboard/BannersCRUD'
 import { GruposCRUD } from '../pages/private/Dashboard/GruposCRUD'
 import { IngredientesCRUD } from '../pages/private/Dashboard/IngredientesCRUD'
+import SedesCRUD from '../pages/private/Dashboard/SedesCRUD'
 import { ComingSoon } from '../pages/private/Dashboard/ComingSoon'
 import AdminDashboard from '../pages/private/Dashboard/Admin'
 
@@ -75,7 +76,7 @@ export default function AppRouter () {
                 <Route path='grupos' element={<GruposCRUD />} />
                 <Route path='ingredientes' element={<IngredientesCRUD />} />
                 <Route path='usuarios' element={<ComingSoon section="usuarios" />} />
-                <Route path='sedes' element={<ComingSoon section="sedes" />} />
+                <Route path='sedes' element={<SedesCRUD />} />
                 <Route path='banners' element={<BannersCRUD />} />
                 <Route index element={<Navigate to='dashboard' replace />} />
             </Route>

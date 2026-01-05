@@ -1,7 +1,18 @@
+import { useEffect } from 'react';
 import { X, Plus } from 'lucide-react';
 import './ProductSuggestionsModal.css';
 
 export default function ProductSuggestionsModal({ isOpen, suggestions, onAddProduct, onContinue }) {
+  // Prevenir scroll del body cuando el modal está abierto
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => document.body.classList.remove('modal-open');
+  }, [isOpen]);
+  
   if (!isOpen) return null;
 
   const bebidas = suggestions.filter(p => p.type === 'Bebida');

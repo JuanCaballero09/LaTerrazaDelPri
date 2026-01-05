@@ -1,5 +1,6 @@
 import axios from './axios';
 
+// ===== ENDPOINTS PÚBLICOS =====
 export const fetchSedes = async () => {
     try {
         const response = await axios.get('/sedes');
@@ -20,4 +21,41 @@ export const fetchNearestSede = async (latitude, longitude) => {
         console.error('❌ Error fetching nearest sede:', error);
         throw error;
     }
+};
+
+// ===== ENDPOINTS DASHBOARD (ADMIN) =====
+
+// GET /api/v1/dashboard/sedes
+export const getSedesRequest = async (params = {}) => {
+    const response = await axios.get('/dashboard/sedes', { params });
+    return response.data;
+};
+
+// GET /api/v1/dashboard/sedes/:id
+export const getSedeRequest = async (id) => {
+    const response = await axios.get(`/dashboard/sedes/${id}`);
+    return response.data;
+};
+
+// POST /api/v1/dashboard/sedes
+export const createSedeRequest = async (sedeData) => {
+    const response = await axios.post('/dashboard/sedes', { sede: sedeData });
+    return response.data;
+};
+
+// PATCH /api/v1/dashboard/sedes/:id
+export const updateSedeRequest = async (id, sedeData) => {
+    const response = await axios.patch(`/dashboard/sedes/${id}`, { sede: sedeData });
+    return response.data;
+};
+
+// DELETE /api/v1/dashboard/sedes/:id
+export const deleteSedeRequest = async (id) => {
+    await axios.delete(`/dashboard/sedes/${id}`);
+};
+
+// PATCH /api/v1/dashboard/sedes/:id/toggle_activo
+export const toggleSedeActivoRequest = async (id) => {
+    const response = await axios.patch(`/dashboard/sedes/${id}/toggle_activo`);
+    return response.data;
 };

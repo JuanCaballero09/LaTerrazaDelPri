@@ -31,11 +31,13 @@
 /* Sidebar Header */
 .sidebar-header {
   display: flex;
+  flex-direction: column-reverse;
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   min-height: 70px;
+  gap: 1rem;
 }
 
 .dashboard-sidebar.closed .sidebar-header {
@@ -44,13 +46,22 @@
 }
 
 .sidebar-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   font-size: 1.3rem;
   font-weight: bold;
-  margin: 0;
   white-space: nowrap;
   overflow: hidden;
-  color: #ffd700;
+  color: var(--primary-color);
   transition: font-size 0.3s ease;
+}
+
+.sidebar-logo .logo-img {
+  height: 50px;
+  width: 50px;
+  object-fit: cover;
 }
 
 .dashboard-sidebar.closed .sidebar-logo {
@@ -237,6 +248,44 @@
   font-size: 1.2rem;
 }
 
+/* Back Button */
+.back-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin-bottom: 0.5rem;
+}
+
+.back-btn:hover {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+.back-icon {
+  font-size: 1.2rem;
+}
+
+.dashboard-sidebar.closed .back-btn span:not(.back-icon) {
+  display: none;
+}
+
+.dashboard-sidebar.closed .back-btn {
+  padding: 0.75rem 0.5rem;
+  min-width: auto;
+}
+
 .dashboard-sidebar.closed .logout-btn span:not(.logout-icon) {
   display: none;
 }
@@ -244,6 +293,43 @@
 .dashboard-sidebar.closed .logout-btn {
   padding: 0.75rem 0.5rem;
   min-width: auto;
+}
+
+/* Botón Hamburguesa para Móvil */
+.mobile-menu-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1001;
+  width: 45px;
+  height: 45px;
+  background: #1a1a1a;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-menu-toggle:hover {
+  background: #2d2d2d;
+  border-color: #ffd700;
+  transform: scale(1.05);
+}
+
+.mobile-menu-toggle span {
+  display: block;
+  width: 24px;
+  height: 3px;
+  background: #ffd700;
+  border-radius: 2px;
+  transition: all 0.3s ease;
 }
 
 /* Main Content */
@@ -306,12 +392,22 @@
 }
 
 @media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
   .dashboard-sidebar {
     transform: translateX(-100%);
+    z-index: 1002;
   }
   
   .dashboard-sidebar.open {
     transform: translateX(0);
+    width: 280px;
+  }
+  
+  .dashboard-sidebar.closed {
+    transform: translateX(-100%);
     width: 280px;
   }
   
@@ -326,8 +422,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1001;
   }
   
   .dashboard-content {

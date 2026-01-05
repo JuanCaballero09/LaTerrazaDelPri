@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import { 
     Pizza, 
@@ -9,19 +10,28 @@ import {
     X 
 } from 'lucide-react';
 import { useDashboardProducts } from '../../../hooks/Dashboard/useDashboardProducts';
+import { useDashboardGrupos } from '../../../hooks/Dashboard/useDashboardGrupos';
+import { useDashboardIngredientes } from '../../../hooks/Dashboard/useDashboardIngredientes';
 import ImageWithSkeleton from '../../../components/ui/Skeletons/ImageWithSkeleton';
+import { ImageUpload } from '../../../components/ui/ImageUpload/ImageUpload';
 import './Dashboard.css';
+
+// Tamaños disponibles según tipo de producto
+const TAMANOS_PIZZA = ['Personal', 'Mediana', 'Grande', 'Familiar'];
+const TAMANOS_BEBIDA = ['Personal', '300ml', '500ml', 'Litro', '1.5L', '2L', '3L'];
+const TAMANOS_ACOMPANANTE = ['Pequeña', 'Mediana', 'Grande', 'Familiar'];
 
 const INITIAL_FORM_DATA = {
     nombre: '',
     descripcion: '',
     precio: '',
-    categoria_id: '',
-    tipo: 'Pizza',
+    grupo_id: '',
+    tipo: 'Producto',
     disponible: true,
     imagen_url: '',
     tamanos_disponibles: [],
-    precios_por_tamano: {}
+    precios_por_tamano: {},
+    ingrediente_ids: []
 };
 
 export function ProductosCRUD() {
@@ -36,6 +46,9 @@ export function ProductosCRUD() {
         getStats
     } = useDashboardProducts();
 
+    const { grupos, createGrupo } = useDashboardGrupos();
+    const { ingredientes } = useDashboardIngredientes();
+
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -44,9 +57,45 @@ export function ProductosCRUD() {
     const [formData, setFormData] = useState(INITIAL_FORM_DATA);
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [creatingGroup, setCreatingGroup] = useState(false);
 
     const stats = getStats();
     const filteredProductos = filterProductos(searchTerm, filterCategoria, filterEstado);
+    
+    // Prevenir scroll del body cuando el modal está abierto
+    // eslint-disable-next-line no-undef
+    useEffect(() => {
+        if (showModal) {
+            document.body.classList.add('modal-open');
+        } else {
+            document.body.classList.remove('modal-open');
+        }
+        return () => document.body.classList.remove('modal-open');
+    }, [showModal]);
+
+    // Obtener tamaños según el tipo de producto
+    const getTamanosDisponibles = () => {
+        switch (formData.tipo) {
+            case 'Pizza':
+                return TAMANOS_PIZZA;
+            case 'Bebida':
+                return TAMANOS_BEBIDA;
+            case 'Acompañante':
+                return TAMANOS_ACOMPANANTE;
+            default:
+                return [];
+        }
+    };
+
+    // Verificar si el tipo necesita tamaños
+    const necesitaTamanos = () => {
+        return ['Pizza', 'Bebida', 'Acompañante'].includes(formData.tipo);
+    };
+
+    // Verificar si el tipo necesita ingredientes
+    const necesitaIngredientes = () => {
+        return ['Producto', 'Pizza', 'Acompañante'].includes(formData.tipo);
+    };
 
     const handleOpenModal = (producto = null) => {
         if (producto) {
@@ -55,12 +104,13 @@ export function ProductosCRUD() {
             nombre: producto.nombre || '',
             descripcion: producto.descripcion || '',
             precio: producto.precio || '',
-            categoria_id: producto.categoria_id || '',
-            tipo: producto.type || 'Pizza',
+            grupo_id: producto.grupo_id || '',
+            tipo: producto.type || 'Producto',
             disponible: producto.disponible ?? true,
             imagen_url: producto.imagen_url || '',
             tamanos_disponibles: producto.tamanos_disponibles || [],
-            precios_por_tamano: producto.precios_por_tamano || {}
+            precios_por_tamano: producto.precios_por_tamano || {},
+            ingrediente_ids: producto.ingredientes?.map(i => i.id) || []
         });
         setImagePreview(producto.imagen_url || null);
         } else {
@@ -80,21 +130,196 @@ export function ProductosCRUD() {
         setImagePreview(null);
     };
 
+    // Obtener nombre del grupo según el tipo
+    const getGrupoNameForTipo = (tipo) => {
+        switch (tipo) {
+            case 'Pizza':
+                return 'Pizzas';
+            case 'Bebida':
+                return 'Bebidas';
+            case 'Acompañante':
+                return 'Acompañantes';
+            case 'Combo':
+                return 'Combos';
+            default:
+                return null;
+        }
+    };
+
+    // Buscar grupo por nombre (case-insensitive)
+    const findGrupoByName = (nombre) => {
+        if (!nombre) return null;
+        return grupos.find(g => 
+            g.nombre.toLowerCase() === nombre.toLowerCase()
+        );
+    };
+
+    // Manejar cambio de tipo de producto
+    const handleTipoChange = async (newTipo) => {
+        let grupoId = formData.grupo_id;
+        
+        // Solo para tipos específicos, buscar/crear el grupo automáticamente
+        if (['Pizza', 'Bebida', 'Acompañante', 'Combo'].includes(newTipo)) {
+            const grupoName = getGrupoNameForTipo(newTipo);
+            const existingGrupo = findGrupoByName(grupoName);
+            
+            if (existingGrupo) {
+                // Si el grupo ya existe, seleccionarlo automáticamente
+                grupoId = existingGrupo.id;
+            } else {
+                // Si no existe, crearlo automáticamente
+                setCreatingGroup(true);
+                try {
+                    const result = await createGrupo({
+                        nombre: grupoName,
+                        descripcion: `Categoría de ${grupoName.toLowerCase()}`,
+                        disponible: true
+                    });
+
+                    if (result.success) {
+                        // Buscar el grupo recién creado en el estado actualizado
+                        // Esperar un momento para que el estado se actualice
+                        setTimeout(() => {
+                            const newGrupo = grupos.find(g => g.nombre === grupoName);
+                            if (newGrupo) {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    grupo_id: newGrupo.id
+                                }));
+                            }
+                        }, 100);
+                    }
+                } catch (error) {
+                    console.error('Error creando grupo:', error);
+                } finally {
+                    setCreatingGroup(false);
+                }
+            }
+        }
+
+        setFormData({
+            ...formData,
+            tipo: newTipo,
+            grupo_id: grupoId,
+            tamanos_disponibles: [],
+            precios_por_tamano: {},
+            ingrediente_ids: []
+        });
+    };
+
+    // Manejar toggle de tamaño
+    const handleTamanoToggle = (tamano) => {
+        const isSelected = formData.tamanos_disponibles.includes(tamano);
+        const newTamanos = isSelected
+            ? formData.tamanos_disponibles.filter(t => t !== tamano)
+            : [...formData.tamanos_disponibles, tamano];
+        
+        const newPrecios = { ...formData.precios_por_tamano };
+        if (!isSelected) {
+            // Inicializar con el precio base si está disponible
+            newPrecios[tamano] = formData.precio || '0';
+        } else {
+            delete newPrecios[tamano];
+        }
+
+        setFormData({
+            ...formData,
+            tamanos_disponibles: newTamanos,
+            precios_por_tamano: newPrecios
+        });
+    };
+
+    // Manejar cambio de precio por tamaño
+    const handlePrecioTamanoChange = (tamano, precio) => {
+        setFormData({
+            ...formData,
+            precios_por_tamano: {
+                ...formData.precios_por_tamano,
+                [tamano]: precio
+            }
+        });
+    };
+
+    // Manejar toggle de ingrediente
+    const handleIngredienteToggle = (ingredienteId) => {
+        const isSelected = formData.ingrediente_ids.includes(ingredienteId);
+        const newIngredientes = isSelected
+            ? formData.ingrediente_ids.filter(id => id !== ingredienteId)
+            : [...formData.ingrediente_ids, ingredienteId];
+        
+        setFormData({
+            ...formData,
+            ingrediente_ids: newIngredientes
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         
+        // Validaciones según tipo
+        if (necesitaTamanos() && formData.tamanos_disponibles.length === 0) {
+            alert('Debes seleccionar al menos un tamaño');
+            return;
+        }
+
+        // Validar que todos los tamaños tengan precio
+        if (necesitaTamanos()) {
+            const tamanosInvalidos = formData.tamanos_disponibles.filter(tamano => {
+                const precio = formData.precios_por_tamano[tamano];
+                return !precio || parseFloat(precio) <= 0;
+            });
+
+            if (tamanosInvalidos.length > 0) {
+                alert(`Por favor ingresa un precio válido para: ${tamanosInvalidos.join(', ')}`);
+                return;
+            }
+        }
+
         // Crear FormData para enviar archivo de imagen
         const submitData = new FormData();
-        Object.keys(formData).forEach(key => {
-            if (formData[key] !== null && formData[key] !== undefined) {
-                submitData.append(`product[${key}]`, formData[key]);
-            }
-        });
+        
+        // Agregar campos básicos
+        submitData.append('product[nombre]', formData.nombre);
+        // Solo enviar descripción si no está vacía, o enviar un espacio para evitar error de validación
+        submitData.append('product[descripcion]', formData.descripcion || ' ');
+        submitData.append('product[precio]', formData.precio);
+        submitData.append('product[grupo_id]', formData.grupo_id);
+        submitData.append('product[type]', formData.tipo);
+        submitData.append('product[disponible]', formData.disponible);
+        
+        // Agregar tamaños si el producto los necesita
+        if (necesitaTamanos()) {
+            formData.tamanos_disponibles.forEach(tamano => {
+                submitData.append('product[tamanos_disponibles][]', tamano);
+            });
+            
+            // Agregar precios por tamaño como hash anidado (NO usar JSON.stringify)
+            Object.keys(formData.precios_por_tamano).forEach(tamano => {
+                submitData.append(`product[precios_por_tamano][${tamano}]`, formData.precios_por_tamano[tamano]);
+            });
+        }
+        
+        // Agregar ingredientes si el producto los necesita
+        if (necesitaIngredientes() && formData.ingrediente_ids.length > 0) {
+            formData.ingrediente_ids.forEach(id => {
+                submitData.append('product[ingrediente_ids][]', id);
+            });
+        }
         
         // Agregar imagen si hay archivo seleccionado
         if (imageFile) {
             submitData.append('product[imagen]', imageFile);
         }
+        
+        // Debug: Ver qué se está enviando
+        console.log('=== ENVIANDO PRODUCTO ===');
+        console.log('Tipo:', formData.tipo);
+        console.log('Nombre:', formData.nombre);
+        console.log('Grupo ID:', formData.grupo_id);
+        console.log('Precio:', formData.precio);
+        console.log('Tamaños:', formData.tamanos_disponibles);
+        console.log('Precios por tamaño:', formData.precios_por_tamano);
+        console.log('Ingredientes:', formData.ingrediente_ids);
         
         const result = editingProduct
             ? await updateProducto(editingProduct.id, submitData)
@@ -103,7 +328,8 @@ export function ProductosCRUD() {
         if (result.success) {
             handleCloseModal();
         } else {
-            alert(result.error);
+            console.error('Error completo del servidor:', result);
+            alert(`Error al ${editingProduct ? 'actualizar' : 'crear'} producto:\n${result.error}`);
         }
     };
 
@@ -152,22 +378,22 @@ export function ProductosCRUD() {
         {/* Filters */}
         <div className="crud-filters">
             <div className="search-box">
-            <Search size={18} className="search-icon" />
-            <input
-                type="text"
-                placeholder="Buscar producto..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
-            />
+                <input
+                    type="text"
+                    placeholder="Buscar producto..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="search-input"
+                />
             </div>
             <div className="filter-group">
-            <select
-                value={filterCategoria}
-                onChange={(e) => setFilterCategoria(e.target.value)}
-                className="filter-select"
-            >
+                <select
+                    value={filterCategoria}
+                    onChange={(e) => setFilterCategoria(e.target.value)}
+                    className="filter-select"
+                >
                 <option value="all">Todas las categorías</option>
+                <option value="Producto">Producto</option>
                 <option value="Pizza">Pizza</option>
                 <option value="Bebida">Bebida</option>
                 <option value="Acompañante">Acompañante</option>
@@ -315,12 +541,35 @@ export function ProductosCRUD() {
                     </div>
 
                     <div className="dashboard-form-group">
+                    <label>Grupo *</label>
+                    <select
+                        value={formData.grupo_id}
+                        onChange={(e) => setFormData({ ...formData, grupo_id: e.target.value })}
+                        required
+                        disabled={creatingGroup}
+                    >
+                        <option value="">
+                            {creatingGroup ? 'Creando grupo...' : 'Seleccionar grupo'}
+                        </option>
+                        {grupos.map(grupo => (
+                            <option key={grupo.id} value={grupo.id}>{grupo.nombre}</option>
+                        ))}
+                    </select>
+                    {creatingGroup && (
+                        <small style={{ color: '#ffd700', marginTop: '0.25rem', display: 'block' }}>
+                            ⏳ Creando grupo automáticamente...
+                        </small>
+                    )}
+                    </div>
+
+                    <div className="dashboard-form-group">
                     <label>Tipo *</label>
                     <select
                         value={formData.tipo}
-                        onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
+                        onChange={(e) => handleTipoChange(e.target.value)}
                         required
                     >
+                        <option value="Producto">Producto</option>
                         <option value="Pizza">Pizza</option>
                         <option value="Bebida">Bebida</option>
                         <option value="Acompañante">Acompañante</option>
@@ -329,7 +578,7 @@ export function ProductosCRUD() {
                     </div>
 
                     <div className="dashboard-form-group">
-                    <label>Precio *</label>
+                    <label>Precio Base *</label>
                     <input
                         type="number"
                         step="0.01"
@@ -339,26 +588,20 @@ export function ProductosCRUD() {
                     />
                     </div>
 
-                    <div className="dashboard-form-group">
-                    <label>Imagen del Producto</label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                            const file = e.target.files[0];
+                    <div className="dashboard-form-group full-width">
+                    <ImageUpload
+                        imageFile={imageFile}
+                        imagePreview={imagePreview}
+                        onImageChange={(file, preview) => {
                             setImageFile(file);
-                            if (file) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => setImagePreview(reader.result);
-                                reader.readAsDataURL(file);
-                            }
+                            setImagePreview(preview);
                         }}
+                        onImageRemove={() => {
+                            setImageFile(null);
+                            setImagePreview(null);
+                        }}
+                        label="Imagen del Producto"
                     />
-                    {imagePreview && (
-                        <div className="image-preview">
-                            <img src={imagePreview} alt="Preview" style={{ maxWidth: '200px', marginTop: '10px', borderRadius: '8px' }} />
-                        </div>
-                    )}
                     </div>
 
                     <div className="dashboard-form-group full-width">
@@ -370,8 +613,68 @@ export function ProductosCRUD() {
                     />
                     </div>
 
+                    {/* Tamaños (Pizza, Bebida, Acompañante) */}
+                    {necesitaTamanos() && (
+                        <div className="dashboard-form-group full-width">
+                            <label>Tamaños Disponibles * <small style={{fontWeight: 'normal', color: '#888'}}>(ingresa precio para cada tamaño)</small></label>
+                            <div className="tamanos-grid">
+                                {getTamanosDisponibles().map(tamano => (
+                                    <div 
+                                        key={tamano} 
+                                        className={`tamano-item ${
+                                            formData.tamanos_disponibles.includes(tamano) && 
+                                            (!formData.precios_por_tamano[tamano] || parseFloat(formData.precios_por_tamano[tamano]) <= 0)
+                                            ? 'tamano-item-error' 
+                                            : ''
+                                        }`}
+                                    >
+                                        <label className="tamano-checkbox">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.tamanos_disponibles.includes(tamano)}
+                                                onChange={() => handleTamanoToggle(tamano)}
+                                            />
+                                            <span>{tamano}</span>
+                                        </label>
+                                        {formData.tamanos_disponibles.includes(tamano) && (
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                min="0.01"
+                                                placeholder={`Precio ${tamano}`}
+                                                value={formData.precios_por_tamano[tamano] || ''}
+                                                onChange={(e) => handlePrecioTamanoChange(tamano, e.target.value)}
+                                                required
+                                                className="tamano-precio-input"
+                                            />
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Ingredientes (Producto, Pizza, Acompañante) */}
+                    {necesitaIngredientes() && ingredientes.length > 0 && (
+                        <div className="dashboard-form-group full-width">
+                            <label>Ingredientes</label>
+                            <div className="ingredientes-grid">
+                                {ingredientes.map(ingrediente => (
+                                    <label key={ingrediente.id} className="ingrediente-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.ingrediente_ids.includes(ingrediente.id)}
+                                            onChange={() => handleIngredienteToggle(ingrediente.id)}
+                                        />
+                                        <span>{ingrediente.nombre}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     <div className="dashboard-form-group full-width">
-                    <label className="dashboard-checkbox-label">
+                    <label className="dashboard-checkbox-label" style={{display: 'flex'}}>
                         <input
                         type="checkbox"
                         checked={formData.disponible}

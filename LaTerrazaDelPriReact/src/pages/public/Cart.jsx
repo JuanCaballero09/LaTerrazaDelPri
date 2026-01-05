@@ -6,6 +6,7 @@ import { useConfig } from '../../hooks/useConfig';
 import { MapPin } from 'lucide-react';
 import { loadGoogleMapsAPI, initializePlaceAutocomplete, calculateDistanceHaversine, calculateDeliveryCost, getDirections } from '../../utils/googleMaps';
 import { ShoppingBasket } from 'lucide-react';
+import ImgDefault  from '../../assets/images/ImagenNoDisponible4-3.png'
 import './Cart.css';
 
 export default function CartPage() {
@@ -25,6 +26,16 @@ export default function CartPage() {
     const attemptedAutoSelectRef = useRef(false);
     const isAddressDisabled = !googleMapsReady || !selectedSede || !selectedSede.id;
     const isPayDisabled = items.length === 0 || !selectedSede || !selectedSede.id || !address || !address.trim();
+    
+    // Prevenir scroll del body cuando el modal está abierto
+    useEffect(() => {
+        if (modalVisible) {
+            document.body.classList.add('modal-open');
+        } else {
+            document.body.classList.remove('modal-open');
+        }
+        return () => document.body.classList.remove('modal-open');
+    }, [modalVisible]);
 
     useEffect(() => {
         loadGoogleMapsAPI()
@@ -98,6 +109,7 @@ export default function CartPage() {
     // Si no hay sede seleccionada, elegir la primera sede activa disponible
     useEffect(() => {
         if ((!selectedSede || !selectedSede.id) && Array.isArray(sedes) && sedes.length > 0) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setSelectedSede(sedes[0]);
         }
         // Si la sede actual ya no está en la lista (por ejemplo fue desactivada), seleccionar la primera
@@ -239,17 +251,21 @@ export default function CartPage() {
                         ) : (
                             items.map(item => (
                                 <div className="cart-item" key={item.id}>
-                                    <img src={item.imagen_url} alt={item.nombre} />
+                                    {(item.imagen_url) ? (
+                                        <img src={item.imagen_url} alt={item.nombre} />
+                                    ) : (
+                                        <img src={ImgDefault} alt="Imagen no disponible" />
+                                    )}
                                     <div className="cart-item-body">
                                         <h4>{item.nombre}</h4>
                                         {item.ingredientes && item.ingredientes.length > 0 && (
                                             <small>{item.ingredientes.slice(0, 3).join(', ')}{item.ingredientes.length > 3 ? '...' : ''}</small>
                                         )}
                                         <div className="cart-controls">
-                                            <button onClick={() => decrease(item.id)}>-</button>
+                                            <button onClick={() => decrease(item)}>-</button>
                                             <span>{item.qty}</span>
-                                            <button onClick={() => increase(item.id)}>+</button>
-                                            <button className="remove" onClick={() => removeItem(item.id)}>Eliminar</button>
+                                            <button onClick={() => increase(item)}>+</button>
+                                            <button className="remove" onClick={() => removeItem(item)}>Eliminar</button>
                                         </div>
                                     </div>
                                     <div className="cart-item-price">{parseFloat(item?.precio).toFixed(2).replace('.', ',').concat(' COP').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</div>

@@ -1,7 +1,9 @@
-import { useState } from 'react';
+/* eslint-disable no-unused-vars */
+import { useState, useEffect } from 'react';
 import { useDashboardGrupos } from '../../../hooks/Dashboard/useDashboardGrupos';
 import { Plus, Edit2, Trash2, X, Package, Image as ImageIcon } from 'lucide-react';
 import ImageWithSkeleton from '../../../components/ui/Skeletons/ImageWithSkeleton';
+import { ImageUpload } from '../../../components/ui/ImageUpload/ImageUpload';
 import './Dashboard.css';
 
 const INITIAL_FORM_DATA = {
@@ -30,6 +32,16 @@ export function GruposCRUD() {
 
   const stats = getStats();
   const filteredGrupos = filterGrupos(searchTerm);
+  
+  // Prevenir scroll del body cuando el modal está abierto
+  useEffect(() => {
+    if (showModal) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => document.body.classList.remove('modal-open');
+  }, [showModal]);
 
   const handleOpenModal = (grupo = null) => {
     if (grupo) {
@@ -60,18 +72,17 @@ export function GruposCRUD() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Crear FormData si hay archivo de imagen
-    let submitData;
+    // Crear FormData para enviar archivo de imagen
+    const submitData = new FormData();
+    Object.keys(formData).forEach(key => {
+      if (formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
+        submitData.append(`grupo[${key}]`, formData[key]);
+      }
+    });
+    
+    // Agregar imagen si hay archivo seleccionado
     if (imageFile) {
-      submitData = new FormData();
-      Object.keys(formData).forEach(key => {
-        if (formData[key] !== null && formData[key] !== undefined) {
-          submitData.append(`grupo[${key}]`, formData[key]);
-        }
-      });
       submitData.append('grupo[imagen]', imageFile);
-    } else {
-      submitData = formData;
     }
     
     const result = editingGrupo
@@ -247,31 +258,20 @@ export function GruposCRUD() {
                 />
               </div>
 
-              <div className="dashboard-form-group">
-                <label className="dashboard-form-label">Imagen del Grupo</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
+              <div className="dashboard-form-group full-width">
+                <ImageUpload
+                  imageFile={imageFile}
+                  imagePreview={imagePreview}
+                  onImageChange={(file, preview) => {
                     setImageFile(file);
-                    if (file) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => setImagePreview(reader.result);
-                      reader.readAsDataURL(file);
-                    }
+                    setImagePreview(preview);
                   }}
-                  className="dashboard-form-input"
+                  onImageRemove={() => {
+                    setImageFile(null);
+                    setImagePreview(null);
+                  }}
+                  label="Imagen del Grupo"
                 />
-                {imagePreview && (
-                  <div className="image-preview">
-                    <img 
-                      src={imagePreview} 
-                      alt="Preview" 
-                      style={{ maxWidth: '200px', marginTop: '10px', borderRadius: '8px' }} 
-                    />
-                  </div>
-                )}
               </div>
 
               <div className="dashboard-modal-actions">

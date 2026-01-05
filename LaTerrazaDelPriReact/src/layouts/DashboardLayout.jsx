@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
+import logo from '../assets/icons/LogoTerrazaDelPri2.svg';
+import { Gauge, Package, Group, Utensils, Beef, Users, MapPinned, GalleryThumbnails, LogOut, House} from 'lucide-react';
 import './DashboardLayout.css';
 
 export function DashboardLayout() {
@@ -18,52 +20,59 @@ export function DashboardLayout() {
         setIsSidebarOpen(!isSidebarOpen);
     };
 
+    const handleLinkClick = () => {
+        // Cerrar sidebar solo en móvil (< 768px)
+        if (window.innerWidth < 768) {
+            setIsSidebarOpen(false);
+        }
+    };
+
     const menuItems = [
         {
         title: 'Dashboard',
-        icon: '📊',
+        icon: <Gauge />,
         path: '/admin/dashboard',
         roles: ['admin', 'empleado']
         },
         {
         title: 'Productos',
-        icon: '🍕',
+        icon: <Utensils />,
         path: '/admin/productos',
         roles: ['admin', 'empleado']
         },
         {
         title: 'Órdenes',
-        icon: '📦',
+        icon: <Package />,
         path: '/admin/ordenes',
         roles: ['admin', 'empleado']
         },
         {
-        title: 'Grupos',
-        icon: '📦',
+        title: 'Categorias',
+        icon: <Group />,
         path: '/admin/grupos',
         roles: ['admin', 'empleado']
         },
         {
         title: 'Ingredientes',
-        icon: '🥬',
+        icon:  <Beef />,
         path: '/admin/ingredientes',
         roles: ['admin', 'empleado']
         },
         {
         title: 'Usuarios',
-        icon: '👥',
+        icon: <Users />,
         path: '/admin/usuarios',
         roles: ['admin']
         },
         {
         title: 'Sedes',
-        icon: '🏪',
+        icon: <MapPinned />,
         path: '/admin/sedes',
         roles: ['admin']
         },
         {
         title: 'Banners',
-        icon: '🖼️',
+        icon: <GalleryThumbnails />,
         path: '/admin/banners',
         roles: ['admin']
         }
@@ -76,11 +85,23 @@ export function DashboardLayout() {
 
     return (
         <div className="dashboard-layout">
+        {/* Botón Hamburguesa para Móvil */}
+        <button 
+            className="mobile-menu-toggle"
+            onClick={toggleSidebar}
+            aria-label="Toggle menu"
+        >
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
         {/* Sidebar */}
         <aside className={`dashboard-sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
             <div className="sidebar-header">
             <h2 className="sidebar-logo">
-                {isSidebarOpen ? 'La Terraza Admin' : 'LT'}
+                {isSidebarOpen ? (<img src={logo} alt="La Terraza del Pri" className="logo-img" />) : ''}
+                {isSidebarOpen ? 'La Terraza Admin' : 'LTP'}
             </h2>
             <button 
                 className="sidebar-toggle"
@@ -99,6 +120,7 @@ export function DashboardLayout() {
                     to={item.path}
                     className={`sidebar-link ${location.pathname === item.path ? 'active' : ''}`}
                     title={!isSidebarOpen ? item.title : ''}
+                    onClick={handleLinkClick}
                     >
                     <span className="sidebar-icon">{item.icon}</span>
                     {isSidebarOpen && <span className="sidebar-text">{item.title}</span>}
@@ -121,11 +143,19 @@ export function DashboardLayout() {
                 )}
             </div>
             <button 
+                className="back-btn" 
+                onClick={() => navigate('/')}
+                title={!isSidebarOpen ? 'Regresar al inicio' : ''}
+            >
+                <span className="back-icon"><House /></span>
+                {isSidebarOpen && <span>Regresar</span>}
+            </button>
+            <button 
                 className="logout-btn" 
                 onClick={handleLogout}
                 title={!isSidebarOpen ? 'Cerrar sesión' : ''}
             >
-                <span className="logout-icon">🚪</span>
+                <span className="logout-icon"><LogOut /></span>
                 {isSidebarOpen && <span>Cerrar Sesión</span>}
             </button>
             </div>

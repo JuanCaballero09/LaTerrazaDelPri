@@ -128,7 +128,10 @@ export default function Navbar () {
                             <User /> {user.nombre} {user.apellido}
                         </div>
                         {(user.rol === 'admin' || user.rol === 'empleado') ? (
-                            <Link to="/dashboard" onClick={() => setOpen(false)}><User />Dashboard</Link>
+                            <>
+                                <Link to="/perfil" onClick={() => setOpen(false)}><User />Mi Perfil</Link>
+                                <Link to="/dashboard" onClick={() => setOpen(false)}><Gauge />Dashboard</Link>
+                            </>
                         ) : (
                             <Link to="/perfil" onClick={() => setOpen(false)}><User />Mi Perfil</Link>
                         )}

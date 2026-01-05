@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import NoImg from '../../assets/images/ImagenNoDisponible4-3.png'
 import './Producto.css'
 import CardSkeleton from '../ui/Skeletons/CardSkeleton'
@@ -6,23 +7,46 @@ import { Link } from 'react-router-dom'
 import { slugify } from '../../utils/slugify'
 import { CirclePlus } from 'lucide-react'
 import useCart from '../../hooks/useCart'
+import { ProductSizeSelector } from '../ui/ProductSizeSelector'
 import * as productoApi from '../../api/producto.api'
 
 export default function ProductoCard ({ producto, Proddisponible = true, loading}) {
     const { addItem, showToast } = useCart()
+    const [showSizeSelector, setShowSizeSelector] = useState(false)
     
     if (loading) return <CardSkeleton />
     if (!Proddisponible) return null
 
-    const fixedPrecio = producto && producto.precio != null
-        ? parseFloat(producto.precio).toFixed(2).replace('.', ',').concat(' COP').replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    // Determinar si necesita selección de tamaño
+    const necesitaTamano = () => {
+        const tiposConTamano = ['Pizza', 'Bebida', 'Acompañante'];
+        return tiposConTamano.includes(producto.type) && 
+               producto.tamanos_disponibles && 
+               producto.tamanos_disponibles.length > 0;
+    };
+
+    // Obtener el precio a mostrar (el más bajo si tiene tamaños)
+    const getPrecioAMostrar = () => {
+        if (necesitaTamano() && producto.precios_por_tamano) {
+            const precios = Object.values(producto.precios_por_tamano)
+                .map(p => parseFloat(p))
+                .filter(p => !isNaN(p) && p > 0);
+            
+            if (precios.length > 0) {
+                return Math.min(...precios);
+            }
+        }
+        return parseFloat(producto.precio);
+    };
+
+    const precioMostrar = getPrecioAMostrar();
+    const fixedPrecio = precioMostrar != null
+        ? precioMostrar.toFixed(2).replace('.', ',').concat(' COP').replace(/\B(?=(\d{3})+(?!\d))/g, '.')
         : '0,00 COP'
 
     const categoriaPart = `${producto.grupo_id}-${slugify(producto.nombre || '')}`
     const productoPart = `${producto.id}-${slugify(producto.nombre || '')}`
     const to = `/categoria/${categoriaPart}/producto/${productoPart}`
-
-    
 
     const disabled = producto?.disponible === false
 
@@ -30,7 +54,7 @@ export default function ProductoCard ({ producto, Proddisponible = true, loading
         e.preventDefault()
 
         try {
-            // comprobar estado más reciente en el servidor
+            // Comprobar estado más reciente en el servidor
             const res = await productoApi.getProducto(producto.grupo_id, producto.id)
             const serverProduct = res?.data
             if (!serverProduct) {
@@ -43,27 +67,67 @@ export default function ProductoCard ({ producto, Proddisponible = true, loading
                 return
             }
 
-            addItem({ id: producto.id, nombre: producto.nombre, precio: producto.precio, imagen_url: producto.imagen_url, ingredientes: producto.ingredientes || [], type: producto.type, grupo_id: producto.grupo_id })
+            // Si necesita selección de tamaño, mostrar modal
+            if (necesitaTamano()) {
+                setShowSizeSelector(true)
+            } else {
+                // Agregar directamente sin modal
+                addItem({ 
+                    id: producto.id, 
+                    nombre: producto.nombre, 
+                    precio: producto.precio, 
+                    imagen_url: producto.imagen_url, 
+                    ingredientes: producto.ingredientes || [], 
+                    type: producto.type, 
+                    grupo_id: producto.grupo_id 
+                })
+            }
         } catch (err) {
             showToast(err?.response?.data?.error || 'Error verificando disponibilidad')
         }
     }
 
+    const handleSizeSelect = (tamano, precio) => {
+        addItem({ 
+            id: producto.id, 
+            nombre: `${producto.nombre} - ${tamano}`,
+            precio: precio, 
+            imagen_url: producto.imagen_url, 
+            ingredientes: producto.ingredientes || [], 
+            type: producto.type, 
+            grupo_id: producto.grupo_id,
+            tamano_selected: tamano
+        })
+    }
+
     return (
-        <Link to={to} className="producto-card">
-            <ImageWithSkeleton
-                src={producto.imagen_url}
-                alt={producto.nombre}
-                fallbackSrc={NoImg}
-            />
+        <>
+            <Link to={to} className="producto-card">
+                <ImageWithSkeleton
+                    src={producto.imagen_url}
+                    alt={producto.nombre}
+                    fallbackSrc={NoImg}
+                />
 
-            <h3>{producto.nombre}</h3>
-            <p className="producto-price">${fixedPrecio}</p>
+                <h3>{producto.nombre}</h3>
+                <p className="producto-price">
+                    {necesitaTamano() && 'Desde '}${fixedPrecio}
+                </p>
 
+                <div className="producto-card-actions">
+                    <button className="btn btn-add" onClick={handleAdd} disabled={disabled}>
+                        Agregar<CirclePlus />
+                    </button>
+                </div>
+            </Link>
 
-            <div className="producto-card-actions">
-                <button className="btn btn-add" onClick={handleAdd} disabled={disabled}>Agregar<CirclePlus /></button>
-            </div>
-        </Link>
+            {showSizeSelector && (
+                <ProductSizeSelector
+                    producto={producto}
+                    onSelect={handleSizeSelect}
+                    onClose={() => setShowSizeSelector(false)}
+                />
+            )}
+        </>
     )
 }

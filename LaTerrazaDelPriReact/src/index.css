@@ -41,6 +41,14 @@ body::-webkit-scrollbar-thumb {
     display: none;
 }
 
+/* Prevenir scroll cuando hay un modal abierto */
+body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
 .page-content{
     background: var(--background-color);
     padding: 1.5rem 0;

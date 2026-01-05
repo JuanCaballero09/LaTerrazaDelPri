@@ -35,6 +35,22 @@ export default function BannerSlider ({ banners = [], error }) {
         startAutoPlay()
     }
 
+    if (slides.length === 0) {
+        return (
+            <div className='banner-slider'>
+                <div className='banner-track'>
+                    <img
+                        className='banner-slide'
+                        src={defaultImage}
+                        alt="No hay banners disponibles"
+                        draggable="false" 
+                        onContextMenu={e => e.preventDefault()}
+                    />
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className='banner-slider'>
             {error && (

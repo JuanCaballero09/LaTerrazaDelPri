@@ -6,6 +6,16 @@ import './AddressModal.css';
 export default function AddressModal({ isOpen, onClose, onSave, initialData = null, isLoading = false }) {
     const [googleMapsReady, setGoogleMapsReady] = useState(false);
     
+    // Prevenir scroll del body cuando el modal está abierto
+    useEffect(() => {
+        if (isOpen) {
+            document.body.classList.add('modal-open');
+        } else {
+            document.body.classList.remove('modal-open');
+        }
+        return () => document.body.classList.remove('modal-open');
+    }, [isOpen]);
+    
     // Inicializar formData basado en initialData
     const getInitialFormData = () => {
         if (initialData) {

@@ -40,7 +40,16 @@ export function useDashboardProducts() {
       return { success: true };
     } catch (err) {
       console.error('Error al crear producto:', err);
-      return { success: false, error: 'Error al crear el producto' };
+      console.error('Respuesta del servidor:', err.response?.data);
+      
+      const errorMessage = err.response?.data?.errors 
+        ? (Array.isArray(err.response.data.errors) 
+            ? err.response.data.errors.join(', ') 
+            : err.response.data.errors)
+        : err.response?.data?.error 
+        || 'Error al crear el producto';
+      
+      return { success: false, error: errorMessage, details: err.response?.data };
     }
   };
 
@@ -55,7 +64,16 @@ export function useDashboardProducts() {
       return { success: true };
     } catch (err) {
       console.error('Error al actualizar producto:', err);
-      return { success: false, error: 'Error al actualizar el producto' };
+      console.error('Respuesta del servidor:', err.response?.data);
+      
+      const errorMessage = err.response?.data?.errors 
+        ? (Array.isArray(err.response.data.errors) 
+            ? err.response.data.errors.join(', ') 
+            : err.response.data.errors)
+        : err.response?.data?.error 
+        || 'Error al actualizar el producto';
+      
+      return { success: false, error: errorMessage, details: err.response?.data };
     }
   };
 

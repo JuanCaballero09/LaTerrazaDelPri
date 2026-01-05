@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDashboardBanners } from '../../../hooks/Dashboard/useDashboardBanners';
 import { 
   Image as ImageIcon, 
   Plus, 
   Trash2, 
   X, 
-  Upload, 
   AlertCircle 
 } from 'lucide-react';
+import { ImageUpload } from '../../../components/ui/ImageUpload/ImageUpload';
 import './Dashboard.css';
 
 export function BannersCRUD() {
@@ -22,50 +22,40 @@ export function BannersCRUD() {
   } = useDashboardBanners();
 
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
-    imagen: null,
-    preview: null
-  });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  
+  // Prevenir scroll del body cuando el modal está abierto
+  useEffect(() => {
+    if (showModal) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => document.body.classList.remove('modal-open');
+  }, [showModal]);
 
   const handleOpenModal = () => {
-    setFormData({ imagen: null, preview: null });
+    setImageFile(null);
+    setImagePreview(null);
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setFormData({ imagen: null, preview: null });
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const validation = validateFile(file);
-    if (!validation.valid) {
-      alert(validation.error);
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setFormData({
-        imagen: file,
-        preview: reader.result
-      });
-    };
-    reader.readAsDataURL(file);
+    setImageFile(null);
+    setImagePreview(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!formData.imagen) {
+    if (!imageFile) {
       alert('Por favor selecciona una imagen');
       return;
     }
 
-    const result = await uploadBanner(formData.imagen);
+    const result = await uploadBanner(imageFile);
     
     if (result.success) {
       handleCloseModal();
@@ -217,50 +207,27 @@ export function BannersCRUD() {
 
             <form onSubmit={handleSubmit} className="dashboard-modal-form">
               <div className="dashboard-form-group full-width">
-                <label>Imagen del Banner *</label>
-                
-                {/* Upload Area */}
-                <div className="upload-area">
-                  <input
-                    type="file"
-                    id="banner-upload"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    disabled={uploading}
-                    style={{ display: 'none' }}
-                  />
-                  <label htmlFor="banner-upload" className="upload-label">
-                    {formData.preview ? (
-                      <div className="preview-container">
-                        <img 
-                          src={formData.preview} 
-                          alt="Preview" 
-                          className="preview-image"
-                        />
-                        <div className="preview-overlay">
-                          <Upload size={32} />
-                          <p>Click para cambiar imagen</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="upload-placeholder">
-                        <Upload size={48} />
-                        <p><strong>Click para seleccionar imagen</strong></p>
-                        <p className="upload-hint">o arrastra y suelta aquí</p>
-                        <p className="upload-specs">JPG, PNG o WebP (máx. 5MB)</p>
-                      </div>
-                    )}
-                  </label>
-                </div>
-
-                {formData.imagen && (
-                  <div className="file-info">
-                    <span className="file-name">{formData.imagen.name}</span>
-                    <span className="file-size">
-                      {(formData.imagen.size / 1024 / 1024).toFixed(2)} MB
-                    </span>
-                  </div>
-                )}
+                <ImageUpload
+                  imageFile={imageFile}
+                  imagePreview={imagePreview}
+                  onImageChange={(file, preview) => {
+                    // Validar el archivo
+                    const validation = validateFile(file);
+                    if (!validation.valid) {
+                      alert(validation.error);
+                      return;
+                    }
+                    setImageFile(file);
+                    setImagePreview(preview);
+                  }}
+                  onImageRemove={() => {
+                    setImageFile(null);
+                    setImagePreview(null);
+                  }}
+                  label="Imagen del Banner"
+                  required
+                  disabled={uploading}
+                />
               </div>
 
               <div className="dashboard-modal-actions">
@@ -275,7 +242,7 @@ export function BannersCRUD() {
                 <button 
                   type="submit" 
                   className="dashboard-btn-primary"
-                  disabled={uploading || !formData.imagen}
+                  disabled={uploading || !imageFile}
                 >
                   {uploading ? 'Subiendo...' : 'Crear Banner'}
                 </button>
