@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
     Pizza, 
     Plus, 
@@ -19,7 +18,7 @@ import './Dashboard.css';
 // Tamaños disponibles según tipo de producto
 const TAMANOS_PIZZA = ['Personal', 'Mediana', 'Grande', 'Familiar'];
 const TAMANOS_BEBIDA = ['Personal', '300ml', '500ml', 'Litro', '1.5L', '2L', '3L'];
-const TAMANOS_ACOMPANANTE = ['Pequeña', 'Mediana', 'Grande', 'Familiar'];
+const TAMANOS_ACOMPANANTE = ['Pequeña', 'Mediana', 'Grande'];
 
 const INITIAL_FORM_DATA = {
     nombre: '',
@@ -31,7 +30,8 @@ const INITIAL_FORM_DATA = {
     imagen_url: '',
     tamanos_disponibles: [],
     precios_por_tamano: {},
-    ingrediente_ids: []
+    ingrediente_ids: [],
+    combo_items: [] // { product_id, cantidad, tamano }
 };
 
 export function ProductosCRUD() {
@@ -63,7 +63,6 @@ export function ProductosCRUD() {
     const filteredProductos = filterProductos(searchTerm, filterCategoria, filterEstado);
     
     // Prevenir scroll del body cuando el modal está abierto
-    // eslint-disable-next-line no-undef
     useEffect(() => {
         if (showModal) {
             document.body.classList.add('modal-open');
@@ -97,6 +96,11 @@ export function ProductosCRUD() {
         return ['Producto', 'Pizza', 'Acompañante'].includes(formData.tipo);
     };
 
+    // Verificar si es un combo
+    const esCombo = () => {
+        return formData.tipo === 'Combo';
+    };
+
     const handleOpenModal = (producto = null) => {
         if (producto) {
         setEditingProduct(producto);
@@ -110,7 +114,13 @@ export function ProductosCRUD() {
             imagen_url: producto.imagen_url || '',
             tamanos_disponibles: producto.tamanos_disponibles || [],
             precios_por_tamano: producto.precios_por_tamano || {},
-            ingrediente_ids: producto.ingredientes?.map(i => i.id) || []
+            ingrediente_ids: producto.ingredientes?.map(i => i.id) || [],
+            combo_items: producto.combo_items?.map(item => ({
+                id: item.id,
+                product_id: item.product_id,
+                cantidad: item.cantidad,
+                tamano: item.tamano || ''
+            })) || []
         });
         setImagePreview(producto.imagen_url || null);
         } else {
@@ -203,7 +213,8 @@ export function ProductosCRUD() {
             grupo_id: grupoId,
             tamanos_disponibles: [],
             precios_por_tamano: {},
-            ingrediente_ids: []
+            ingrediente_ids: [],
+            combo_items: []
         });
     };
 
@@ -253,6 +264,81 @@ export function ProductosCRUD() {
         });
     };
 
+    // Manejar agregar item al combo
+    const handleAddComboItem = () => {
+        setFormData({
+            ...formData,
+            combo_items: [
+                ...formData.combo_items,
+                { product_id: '', cantidad: 1, tamano: '' }
+            ]
+        });
+    };
+
+    // Manejar eliminar item del combo
+    const handleRemoveComboItem = (index) => {
+        const newItems = [...formData.combo_items];
+        const removedItem = newItems[index];
+        
+        // Si tiene id, marcarlo para destrucción en lugar de eliminarlo
+        if (removedItem.id) {
+            newItems[index] = { ...removedItem, _destroy: true };
+        } else {
+            newItems.splice(index, 1);
+        }
+        
+        setFormData({
+            ...formData,
+            combo_items: newItems
+        });
+    };
+
+    // Manejar cambio en combo item
+    const handleComboItemChange = (index, field, value) => {
+        const newItems = [...formData.combo_items];
+        
+        if (field === 'product_id') {
+            // Si cambia el producto, resetear el tamaño
+            newItems[index] = {
+                ...newItems[index],
+                product_id: value,
+                tamano: ''
+            };
+        } else {
+            newItems[index] = {
+                ...newItems[index],
+                [field]: field === 'cantidad' ? parseInt(value) || 1 : value
+            };
+        }
+        
+        setFormData({
+            ...formData,
+            combo_items: newItems
+        });
+    };
+
+    // Obtener productos disponibles para combo (excluyendo combos)
+    const getProductosParaCombo = () => {
+        return productos.filter(p => p.type !== 'Combo');
+    };
+
+    // Obtener producto por ID
+    const getProductoById = (productId) => {
+        return productos.find(p => p.id === parseInt(productId));
+    };
+
+    // Verificar si un producto tiene tamaños
+    const productoTieneTamanos = (productId) => {
+        const producto = getProductoById(productId);
+        return producto && producto.tamanos_disponibles && producto.tamanos_disponibles.length > 0;
+    };
+
+    // Obtener tamaños de un producto
+    const getTamanosDeProducto = (productId) => {
+        const producto = getProductoById(productId);
+        return producto?.tamanos_disponibles || [];
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         
@@ -260,6 +346,35 @@ export function ProductosCRUD() {
         if (necesitaTamanos() && formData.tamanos_disponibles.length === 0) {
             alert('Debes seleccionar al menos un tamaño');
             return;
+        }
+
+        // Validar combos
+        if (esCombo()) {
+            const itemsActivos = formData.combo_items.filter(item => !item._destroy);
+            if (itemsActivos.length === 0) {
+                alert('Un combo debe tener al menos un producto');
+                return;
+            }
+            
+            // Validar que tengan producto y cantidad
+            const itemsInvalidos = itemsActivos.filter(item => 
+                !item.product_id || item.cantidad < 1
+            );
+            
+            if (itemsInvalidos.length > 0) {
+                alert('Todos los productos del combo deben tener un producto seleccionado y cantidad válida');
+                return;
+            }
+
+            // Validar que productos con tamaños tengan un tamaño seleccionado
+            const itemsSinTamano = itemsActivos.filter(item => 
+                productoTieneTamanos(item.product_id) && !item.tamano
+            );
+            
+            if (itemsSinTamano.length > 0) {
+                alert('Debes seleccionar un tamaño para todos los productos que lo requieran');
+                return;
+            }
         }
 
         // Validar que todos los tamaños tengan precio
@@ -306,6 +421,24 @@ export function ProductosCRUD() {
             });
         }
         
+        // Agregar combo items si es un combo
+        if (esCombo() && formData.combo_items.length > 0) {
+            formData.combo_items.forEach((item, index) => {
+                if (item.id) {
+                    submitData.append(`product[combo_items_attributes][${index}][id]`, item.id);
+                }
+                if (item._destroy) {
+                    submitData.append(`product[combo_items_attributes][${index}][_destroy]`, 'true');
+                } else {
+                    submitData.append(`product[combo_items_attributes][${index}][product_id]`, item.product_id);
+                    submitData.append(`product[combo_items_attributes][${index}][cantidad]`, item.cantidad);
+                    if (item.tamano) {
+                        submitData.append(`product[combo_items_attributes][${index}][tamano]`, item.tamano);
+                    }
+                }
+            });
+        }
+        
         // Agregar imagen si hay archivo seleccionado
         if (imageFile) {
             submitData.append('product[imagen]', imageFile);
@@ -320,6 +453,7 @@ export function ProductosCRUD() {
         console.log('Tamaños:', formData.tamanos_disponibles);
         console.log('Precios por tamaño:', formData.precios_por_tamano);
         console.log('Ingredientes:', formData.ingrediente_ids);
+        console.log('Combo Items:', formData.combo_items);
         
         const result = editingProduct
             ? await updateProducto(editingProduct.id, submitData)
@@ -669,6 +803,76 @@ export function ProductosCRUD() {
                                         <span>{ingrediente.nombre}</span>
                                     </label>
                                 ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Productos del Combo */}
+                    {esCombo() && (
+                        <div className="dashboard-form-group full-width">
+                            <label>Productos del Combo * <small style={{fontWeight: 'normal', color: '#888'}}>(mínimo 1 producto)</small></label>
+                            <div className="combo-items-container">
+                                {formData.combo_items.filter(item => !item._destroy).map((item, index) => (
+                                    <div key={index} className="combo-item-row-extended">
+                                        <select
+                                            value={item.product_id}
+                                            onChange={(e) => handleComboItemChange(index, 'product_id', e.target.value)}
+                                            required
+                                            className="combo-item-select"
+                                        >
+                                            <option value="">Seleccionar producto</option>
+                                            {getProductosParaCombo().map(producto => (
+                                                <option key={producto.id} value={producto.id}>
+                                                    {producto.nombre} ({producto.type})
+                                                </option>
+                                            ))}
+                                        </select>
+                                        
+                                        {/* Selector de tamaño si el producto lo requiere */}
+                                        {item.product_id && productoTieneTamanos(item.product_id) && (
+                                            <select
+                                                value={item.tamano || ''}
+                                                onChange={(e) => handleComboItemChange(index, 'tamano', e.target.value)}
+                                                required
+                                                className="combo-item-tamano"
+                                            >
+                                                <option value="">Tamaño</option>
+                                                {getTamanosDeProducto(item.product_id).map(tamano => (
+                                                    <option key={tamano} value={tamano}>
+                                                        {tamano}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        )}
+                                        
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            value={item.cantidad}
+                                            onChange={(e) => handleComboItemChange(index, 'cantidad', e.target.value)}
+                                            placeholder="Cant."
+                                            required
+                                            className="combo-item-cantidad"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveComboItem(index)}
+                                            className="dashboard-btn-icon dashboard-btn-delete"
+                                            title="Eliminar"
+                                        >
+                                            <X size={18} />
+                                        </button>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={handleAddComboItem}
+                                    className="dashboard-btn-secondary"
+                                    style={{ marginTop: '0.5rem' }}
+                                >
+                                    <Plus size={18} style={{ marginRight: '6px' }} />
+                                    Agregar Producto
+                                </button>
                             </div>
                         </div>
                     )}

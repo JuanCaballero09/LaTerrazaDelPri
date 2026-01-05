@@ -1711,6 +1711,104 @@
 }
 
 /* ========================================
+   COMBO ITEMS - GESTIÓN DE COMBOS
+   ======================================== */
+
+.combo-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    padding: 1rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.combo-item-row {
+    display: grid;
+    grid-template-columns: 1fr 120px auto;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+/* Layout extendido para incluir selector de tamaño */
+.combo-item-row-extended {
+    display: grid;
+    grid-template-columns: 2fr 1fr 100px auto;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.combo-item-row:hover,
+.combo-item-row-extended:hover {
+    border-color: #ffd700;
+    box-shadow: 0 2px 4px rgba(255, 215, 0, 0.1);
+}
+
+.combo-item-select,
+.combo-item-tamano {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #333;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.combo-item-select:focus,
+.combo-item-tamano:focus {
+    outline: none;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+}
+
+.combo-item-tamano {
+    font-weight: 500;
+}
+
+.combo-item-cantidad {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #333;
+    background: white;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.combo-item-cantidad:focus {
+    outline: none;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+}
+
+/* Responsive para combos */
+@media (max-width: 768px) {
+    .combo-item-row-extended {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .combo-item-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+}
+
+/* ========================================
     SEDES CRUD - GESTIÓN DE SEDES
    ======================================== */
 

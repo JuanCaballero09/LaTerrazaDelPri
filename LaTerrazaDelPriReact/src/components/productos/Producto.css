@@ -339,9 +339,21 @@
     color:var(--text-color) 
 }
 
+.component-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
 .component-info span { 
     font-size:0.9rem; 
     color:var(--secondary-text-color, #666) 
+}
+
+.component-size {
+    color: var(--primary-color, #ffd700) !important;
+    font-weight: 600;
+    font-size: 0.85rem !important;
 }
 
 .component-unavailable { 
