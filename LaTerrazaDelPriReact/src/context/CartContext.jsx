@@ -18,6 +18,39 @@ export function CartProvider({ children }) {
         }
     })
     const [isValidating, setIsValidating] = useState(false)
+    
+    // Estado para dirección y sede (para compartir con Checkout)
+    const [address, setAddress] = useState(() => {
+        try {
+            return localStorage.getItem('cart_address') || ''
+        } catch (e) {
+            return ''
+        }
+    })
+    const [addressData, setAddressData] = useState(() => {
+        try {
+            const raw = localStorage.getItem('cart_addressData')
+            return raw ? JSON.parse(raw) : null
+        } catch (e) {
+            return null
+        }
+    })
+    const [selectedSede, setSelectedSede] = useState(() => {
+        try {
+            const raw = localStorage.getItem('cart_selectedSede')
+            return raw ? JSON.parse(raw) : null
+        } catch (e) {
+            return null
+        }
+    })
+    const [deliveryCost, setDeliveryCost] = useState(() => {
+        try {
+            const raw = localStorage.getItem('cart_deliveryCost')
+            return raw ? parseFloat(raw) : 0
+        } catch (e) {
+            return 0
+        }
+    })
 
     // Persistir cambios del carrito en localStorage
     useEffect(() => {
@@ -27,6 +60,42 @@ export function CartProvider({ children }) {
             console.error('Error guardando carrito en localStorage:', e)
         }
     }, [items])
+
+    // Persistir dirección y sede en localStorage
+    useEffect(() => {
+        try {
+            if (address) localStorage.setItem('cart_address', address)
+            else localStorage.removeItem('cart_address')
+        } catch (e) {
+            console.error('Error guardando dirección en localStorage:', e)
+        }
+    }, [address])
+
+    useEffect(() => {
+        try {
+            if (addressData) localStorage.setItem('cart_addressData', JSON.stringify(addressData))
+            else localStorage.removeItem('cart_addressData')
+        } catch (e) {
+            console.error('Error guardando addressData en localStorage:', e)
+        }
+    }, [addressData])
+
+    useEffect(() => {
+        try {
+            if (selectedSede) localStorage.setItem('cart_selectedSede', JSON.stringify(selectedSede))
+            else localStorage.removeItem('cart_selectedSede')
+        } catch (e) {
+            console.error('Error guardando sede en localStorage:', e)
+        }
+    }, [selectedSede])
+
+    useEffect(() => {
+        try {
+            localStorage.setItem('cart_deliveryCost', deliveryCost.toString())
+        } catch (e) {
+            console.error('Error guardando costo de envío en localStorage:', e)
+        }
+    }, [deliveryCost])
 
     // Estado y función para mostrar notificaciones (toast)
     // `toast` contiene { visible: boolean, message: string }
@@ -191,7 +260,16 @@ export function CartProvider({ children }) {
             totalPrice, 
             toast, 
             showToast,
-            isValidating 
+            isValidating,
+            // Datos de dirección y sede para checkout
+            address,
+            setAddress,
+            addressData,
+            setAddressData,
+            selectedSede,
+            setSelectedSede,
+            deliveryCost,
+            setDeliveryCost
         }}>
             {children}
         </CartContext.Provider>

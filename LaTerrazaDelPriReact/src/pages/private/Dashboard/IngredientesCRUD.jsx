@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDashboardIngredientes } from '../../../hooks/Dashboard/useDashboardIngredientes';
-import { Plus, Edit2, Trash2, X, Leaf } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Leaf, Beef} from 'lucide-react';
 import './Dashboard.css';
 
 const INITIAL_FORM_DATA = {
@@ -94,7 +94,7 @@ export function IngredientesCRUD() {
       {/* Header */}
       <div className="crud-header">
         <div className="crud-title-section">
-          <h1>🥬 Gestión de Ingredientes</h1>
+          <h1><Beef /> Gestión de Ingredientes</h1>
           <p className="crud-subtitle">Administra los ingredientes de tus productos</p>
         </div>
         <button 
@@ -111,7 +111,7 @@ export function IngredientesCRUD() {
         <div className="search-box">
           <input
             type="text"
-            placeholder="🔍 Buscar ingredientes..."
+            placeholder="Buscar ingredientes..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
@@ -168,17 +168,17 @@ export function IngredientesCRUD() {
                     </span>
                   </td>
                   <td>
-                    <div className="table-actions">
+                    <div className="table-actions ">
                       <button
                         onClick={() => handleOpenModal(ingrediente)}
-                        className="dashboard-btn-icon"
+                        className="dashboard-btn-icon dashboard-btn-edit"
                         title="Editar"
                       >
                         <Edit2 size={18} />
                       </button>
                       <button
                         onClick={() => handleDelete(ingrediente.id)}
-                        className="dashboard-btn-icon danger"
+                        className="dashboard-btn-icon dashboard-btn-delete"
                         title="Eliminar"
                       >
                         <Trash2 size={18} />

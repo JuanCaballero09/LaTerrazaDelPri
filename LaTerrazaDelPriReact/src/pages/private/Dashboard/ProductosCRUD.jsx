@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { 
-    Pizza, 
+    Hamburger, 
     Plus, 
-    Search, 
     Edit2, 
     Trash2, 
     Image as ImageIcon,
@@ -498,8 +497,7 @@ export function ProductosCRUD() {
         <div className="crud-header">
             <div className="crud-title-section">
             <h1>
-                <Pizza size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }} />
-                Gestión de Productos
+                <Hamburger />                Gestión de Productos
             </h1>
             <p className="crud-subtitle">Administra tu menú completo</p>
             </div>

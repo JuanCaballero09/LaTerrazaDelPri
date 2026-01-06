@@ -437,7 +437,7 @@
 .tamano-option .tamano-name {
     font-size: 0.95rem;
     margin-bottom: 0.5rem;
-    color: inherit;
+    color: var(--text-color);
 }
 
 .tamano-option.selected .tamano-name {

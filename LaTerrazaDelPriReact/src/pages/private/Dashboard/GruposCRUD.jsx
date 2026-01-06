@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import { useDashboardGrupos } from '../../../hooks/Dashboard/useDashboardGrupos';
-import { Plus, Edit2, Trash2, X, Package, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Package, Group, Image as ImageIcon } from 'lucide-react';
 import ImageWithSkeleton from '../../../components/ui/Skeletons/ImageWithSkeleton';
 import { ImageUpload } from '../../../components/ui/ImageUpload/ImageUpload';
 import './Dashboard.css';
@@ -122,7 +122,7 @@ export function GruposCRUD() {
       {/* Header */}
       <div className="crud-header">
         <div className="crud-title-section">
-          <h1>📦 Gestión de Grupos</h1>
+          <h1><Group /> Gestión de Grupos</h1>
           <p className="crud-subtitle">Organiza tus productos en grupos</p>
         </div>
         <button 
@@ -139,7 +139,7 @@ export function GruposCRUD() {
         <div className="search-box">
           <input
             type="text"
-            placeholder="🔍 Buscar grupos..."
+            placeholder="Buscar grupos..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
@@ -199,14 +199,14 @@ export function GruposCRUD() {
               <div className="grupo-actions">
                 <button
                   onClick={() => handleOpenModal(grupo)}
-                  className="dashboard-btn-icon"
+                  className="dashboard-btn-icon dashboard-btn-edit"
                   title="Editar"
                 >
                   <Edit2 size={18} />
                 </button>
                 <button
                   onClick={() => handleDelete(grupo.id)}
-                  className="dashboard-btn-icon danger"
+                  className="dashboard-btn-icon dashboard-btn-delete"
                   title="Eliminar"
                 >
                   <Trash2 size={18} />

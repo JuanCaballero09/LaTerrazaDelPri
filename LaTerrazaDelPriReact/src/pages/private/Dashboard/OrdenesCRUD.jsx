@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDashboardOrders } from '../../../hooks/Dashboard/useDashboardOrders';
+import { Package } from 'lucide-react';
 import './Dashboard.css';
 
 export function OrdenesCRUD() {
@@ -55,7 +56,7 @@ export function OrdenesCRUD() {
       {/* Header */}
       <div className="crud-header">
         <div className="crud-title-section">
-          <h1>📦 Gestión de Órdenes</h1>
+          <h1><Package />Gestión de Órdenes</h1>
           <p className="crud-subtitle">Administra todos los pedidos</p>
         </div>
       </div>
@@ -65,7 +66,7 @@ export function OrdenesCRUD() {
         <div className="search-box">
           <input
             type="text"
-            placeholder="🔍 Buscar por número o cliente..."
+            placeholder="Buscar por número o cliente..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"

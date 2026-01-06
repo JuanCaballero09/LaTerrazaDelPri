@@ -50,6 +50,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   font-size: 1.3rem;
   font-weight: bold;
   white-space: nowrap;
@@ -377,7 +378,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media only screen and (min-width: 600px) and (max-width: 1024px) {
   .dashboard-sidebar.open {
     width: 240px;
   }
@@ -391,7 +392,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media only screen and (max-width: 768px) {
   .mobile-menu-toggle {
     display: flex;
   }
@@ -428,6 +429,7 @@
   
   .dashboard-content {
     padding: 1rem;
+    max-width: 100dvw;
   }
   
   .sidebar-header {

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
 import useCart from '../../hooks/useCart';
 import useSedes from '../../hooks/useSedes';
@@ -10,13 +11,15 @@ import ImgDefault  from '../../assets/images/ImagenNoDisponible4-3.png'
 import './Cart.css';
 
 export default function CartPage() {
-    const { items, increase, decrease, removeItem, totalItems, totalPrice } = useCart();
+    const navigate = useNavigate();
+    const { 
+        items, increase, decrease, removeItem, totalItems, totalPrice,
+        address, setAddress, addressData, setAddressData, 
+        selectedSede, setSelectedSede, deliveryCost, setDeliveryCost
+    } = useCart();
     const { sedes, nearestSede } = useSedes();
     const { googleMapKey } = useConfig();
-    const [address, setAddress] = useState('');
-    const [addressData, setAddressData] = useState(null);
     const [paid, setPaid] = useState(false);
-    const [selectedSede, setSelectedSede] = useState(nearestSede);
     const [modalVisible, setModalVisible] = useState(false);
     const [googleMapsReady, setGoogleMapsReady] = useState(false);
     const [deliveryInfo, setDeliveryInfo] = useState(null);
@@ -360,7 +363,7 @@ export default function CartPage() {
 
                                 <div className="modal-actions">
                                     <button onClick={() => setModalVisible(false)} style={{flex: 1, padding: '12px', background: '#6c757d'}}>Volver a editar</button>
-                                    <button onClick={() => { setModalVisible(false); setPaid(true); }} style={{flex: 1, padding: '12px', background: '#28a745'}}>Continuar al pago</button>
+                                    <button onClick={() => { setModalVisible(false); navigate('/checkout'); }} style={{flex: 1, padding: '12px', background: '#28a745'}}>Continuar al pago</button>
                                 </div>
                             </div>
                         </div>

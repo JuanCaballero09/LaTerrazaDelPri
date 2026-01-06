@@ -8,6 +8,7 @@ import CategoriaIndex from '../pages/public/Categorias/Index'
 import ProductoCategoriaIndex from '../pages/public/Categorias/Productos/index'
 import ProductoShow from '../pages/public/Categorias/Productos/show'
 import CartPage from '../pages/public/Cart'
+import Checkout from '../pages/public/Checkout'
 
 import Menu from '../pages/public/Menu'
 
@@ -28,11 +29,14 @@ import Configuracion from '../pages/private/Perfil/Configuracion'
 // Admin Layout & Pages
 import { DashboardLayout } from '../layouts/DashboardLayout'
 import { DashboardMain } from '../pages/private/Dashboard/DashboardMain'
+import { DashboardMainEnhanced } from '../pages/private/Dashboard/DashboardMainEnhanced'
+import { DashboardMainMinimal } from '../pages/private/Dashboard/DashboardMainMinimal'
 import { ProductosCRUD } from '../pages/private/Dashboard/ProductosCRUD'
 import { OrdenesCRUD } from '../pages/private/Dashboard/OrdenesCRUD'
 import { BannersCRUD } from '../pages/private/Dashboard/BannersCRUD'
 import { GruposCRUD } from '../pages/private/Dashboard/GruposCRUD'
 import { IngredientesCRUD } from '../pages/private/Dashboard/IngredientesCRUD'
+import { UsersCRUD } from '../pages/private/Dashboard/UsersCRUD'
 import SedesCRUD from '../pages/private/Dashboard/SedesCRUD'
 import { ComingSoon } from '../pages/private/Dashboard/ComingSoon'
 import AdminDashboard from '../pages/private/Dashboard/Admin'
@@ -52,6 +56,7 @@ export default function AppRouter () {
             <Route path='/menu' element={<Menu />} />
             
             <Route path='/carrito' element={<CartPage />} />
+            <Route path='/checkout' element={<Checkout />} />
             
             <Route path='/status' element={<Status />} />
 
@@ -70,12 +75,12 @@ export default function AppRouter () {
 
             {/* Admin routes with Dashboard Layout */}
             <Route path='/admin' element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
-                <Route path='dashboard' element={<DashboardMain />} />
+                <Route path='dashboard' element={<DashboardMainMinimal />} />
                 <Route path='productos' element={<ProductosCRUD />} />
                 <Route path='ordenes' element={<OrdenesCRUD />} />
                 <Route path='grupos' element={<GruposCRUD />} />
                 <Route path='ingredientes' element={<IngredientesCRUD />} />
-                <Route path='usuarios' element={<ComingSoon section="usuarios" />} />
+                <Route path='usuarios' element={<UsersCRUD />} />
                 <Route path='sedes' element={<SedesCRUD />} />
                 <Route path='banners' element={<BannersCRUD />} />
                 <Route index element={<Navigate to='dashboard' replace />} />

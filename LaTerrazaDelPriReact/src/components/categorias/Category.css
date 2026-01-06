@@ -192,3 +192,12 @@
     background-color: gray;
     color: white;
 }
+
+/* Dispositivos Móviles (hasta 768px) */
+@media only screen and (max-width: 768px) {
+}
+
+/* Tabletas (desde 600px hasta 1024px) */
+@media only screen and (min-width: 600px) and (max-width: 1024px) {
+
+}

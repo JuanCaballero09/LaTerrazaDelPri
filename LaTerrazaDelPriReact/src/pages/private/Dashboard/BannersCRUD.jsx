@@ -8,6 +8,7 @@ import {
   AlertCircle 
 } from 'lucide-react';
 import { ImageUpload } from '../../../components/ui/ImageUpload/ImageUpload';
+import ImageWithSkeleton from '../../../components/ui/Skeletons/ImageWithSkeleton';
 import './Dashboard.css';
 
 export function BannersCRUD() {
@@ -137,24 +138,17 @@ export function BannersCRUD() {
             <div key={banner.id} className="banner-card">
               <div className="banner-image-container">
                 {imageUrl ? (
-                  <img 
+                  <ImageWithSkeleton 
                     src={imageUrl} 
                     alt={`Banner ${banner.id}`}
                     className="banner-image"
-                    onError={(e) => {
-                      console.error('Error cargando imagen:', imageUrl);
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'flex';
-                    }}
                   />
-                ) : null}
-                <div 
-                  className="banner-image-placeholder" 
-                  style={{ display: imageUrl ? 'none' : 'flex' }}
-                >
-                  <ImageIcon size={48} />
-                  <p>Sin imagen</p>
-                </div>
+                ) : (
+                  <div className="banner-image-placeholder">
+                    <ImageIcon size={48} />
+                    <p>Sin imagen</p>
+                  </div>
+                )}
               </div>
               <div className="banner-card-footer">
                 <div className="banner-info">

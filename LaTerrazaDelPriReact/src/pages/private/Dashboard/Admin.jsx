@@ -9,34 +9,34 @@ export default function AdminDashboard () {
 
     const adminMenuItems = [
         {
-            to: '/dashboard/ordenes',
+            to: '/admin/ordenes',
             icon: <Package size={24} />,
             title: 'Gestionar Órdenes',
             description: 'Ver y administrar todas las órdenes'
         },
         {
-            to: '/dashboard/productos',
+            to: '/admin/productos',
             icon: <ShoppingBag size={24} />,
             title: 'Productos',
             description: 'Administrar catálogo de productos'
         },
         {
-            to: '/dashboard/usuarios',
+            to: '/admin/usuarios',
             icon: <Users size={24} />,
             title: 'Usuarios',
             description: 'Gestionar usuarios del sistema'
         },
         {
-            to: '/dashboard/sedes',
+            to: '/admin/sedes',
             icon: <MapPin size={24} />,
             title: 'Sedes',
             description: 'Administrar sedes y ubicaciones'
         },
         {
-            to: '/dashboard/configuracion',
+            to: '/admin/banners',
             icon: <Settings size={24} />,
-            title: 'Configuración',
-            description: 'Configuración general del sistema'
+            title: 'Banners',
+            description: 'Administrar banners de la página'
         }
     ]
 

@@ -13,7 +13,7 @@ api.interceptors.request.use(
     config => {
         const token = sessionStorage.getItem('token') || localStorage.getItem('token')
         if (token) {
-            // backend expects raw token in Authorization header
+            // Backend espera el token directo sin Bearer
             config.headers['Authorization'] = token
         }
         return config
