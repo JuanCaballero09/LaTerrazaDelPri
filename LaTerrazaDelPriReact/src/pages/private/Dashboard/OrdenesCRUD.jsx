@@ -340,8 +340,8 @@ export function OrdenesCRUD() {
                   <div className="detail-item">
                     <span className="detail-label">Método de Pago:</span>
                     <span className="detail-value">
-                      {selectedOrden.payment_method === 'card' 
-                        ? (selectedOrden.payment_type_card === 'debit' ? '<CreditCard /> Tarjeta Débito' : <CreditCard /> + ' ' + 'Tarjeta Crédito')
+                      {selectedOrden.payment_method === 'card'
+                        ? (selectedOrden.payment_type_card === 'debit' ? '<CreditCard /> Tarjeta Débito' : '<CreditCard /> Tarjeta Crédito')
                         : selectedOrden.payment_method === 'nequi' 
                           ? '📱 Nequi'
                           : selectedOrden.payment_method === 'cash'
