@@ -411,3 +411,80 @@
         flex-direction: row;
     }
 }
+
+/* Delivery Type Selector */
+.delivery-type-selector {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.delivery-option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--background-color);
+}
+
+.delivery-option:hover {
+    border-color: var(--primary-color);
+    background: rgba(255, 215, 0, 0.05);
+}
+
+.delivery-option.selected {
+    border-color: var(--primary-color);
+    background: rgba(255, 215, 0, 0.1);
+}
+
+.delivery-option input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+    margin: 0;
+}
+
+.delivery-option span {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.delivery-option.selected span {
+    color: var(--primary-color-hover);
+    font-weight: 600;
+}
+
+/* Mobile Delivery Selector */
+@media only screen and (max-width: 600px) {
+    .delivery-type-selector {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .delivery-option {
+        padding: 12px 14px;
+    }
+}
+/* Tamaño del producto en el carrito */
+.cart-item-size {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+/* Tamaño del producto en órdenes */
+.item-size {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: normal;
+}
+

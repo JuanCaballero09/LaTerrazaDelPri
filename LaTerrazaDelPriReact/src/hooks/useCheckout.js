@@ -7,7 +7,7 @@ export function useCheckout() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [currentOrder, setCurrentOrder] = useState(null);
-    const { clearCart, items } = useCart();
+    const { clear, items, deliveryCost: cartDeliveryCost, deliveryType: cartDeliveryType } = useCart();
     const { user } = useAuth();
 
     const createOrderFromCart = async (checkoutData) => {
@@ -15,18 +15,31 @@ export function useCheckout() {
             setLoading(true);
             setError(null);
 
-            // Preparar items del carrito
+            // Preparar items del carrito (incluir tamaño si aplica)
             const orderItems = items.map(item => ({
                 product_id: item.id,
-                quantity: item.qty || item.quantity || 1
+                quantity: item.qty || item.quantity || 1,
+                tamano: item.tamano_selected || null,
+                precio: item.precio || null
             }));
+
+            // Determinar tipo de entrega y costo
+            // Priorizar valores de checkoutData pero usar el carrito como fallback
+            const deliveryType = checkoutData.delivery_type || cartDeliveryType || 'domicilio';
+            const deliveryCost = deliveryType === 'recogida' 
+                ? 0 
+                : (typeof checkoutData.delivery_cost === 'number' && checkoutData.delivery_cost > 0
+                    ? checkoutData.delivery_cost 
+                    : (cartDeliveryCost || 0));
 
             // Datos de la orden
             const orderPayload = {
                 direccion: checkoutData.address,
                 items: orderItems,
                 coupon_code: checkoutData.couponCode || null,
-                sede_id: checkoutData.sede_id
+                sede_id: checkoutData.sede_id,
+                delivery_type: deliveryType,
+                delivery_cost: deliveryCost
             };
 
             // Si es invitado, agregar datos de contacto
@@ -41,12 +54,14 @@ export function useCheckout() {
 
             // Crear orden
             const response = await createOrder(orderPayload);
-            const order = response.data;
+            // La respuesta viene como { data: { code, status, ... } }
+            const order = response.data?.data || response.data;
 
+            console.log('✅ Orden creada:', order);
             setCurrentOrder(order);
 
-            // Limpiar carrito después de crear la orden
-            clearCart();
+            // NO limpiar carrito aquí - se limpia después del pago exitoso
+            // clear();
 
             return order;
         } catch (err) {

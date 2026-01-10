@@ -11,12 +11,18 @@ export default function Ordenes () {
 
     const getStatusIcon = (status) => {
         switch (status) {
+            case 'finalizado':
             case 'completed':
                 return <CheckCircle size={20} className='status-icon success' />
+            case 'cancelado':
             case 'cancelled':
                 return <XCircle size={20} className='status-icon error' />
+            case 'pendiente':
             case 'pending':
                 return <Clock size={20} className='status-icon warning' />
+            case 'pagado':
+            case 'tomado':
+                return <AlertCircle size={20} className='status-icon info' />
             default:
                 return <AlertCircle size={20} className='status-icon info' />
         }
@@ -24,6 +30,12 @@ export default function Ordenes () {
 
     const getStatusLabel = (status) => {
         const labels = {
+            pendiente: 'Pendiente',
+            pagado: 'Pagado',
+            tomado: 'En preparación',
+            finalizado: 'Entregado',
+            cancelado: 'Cancelado',
+            // Legacy - por si acaso
             pending: 'Pendiente',
             processing: 'En proceso',
             completed: 'Completado',
@@ -52,22 +64,26 @@ export default function Ordenes () {
         }).format(price)
     }
 
-    const renderOrderCard = (order) => (
-        <Link 
-            key={order.id} 
-            to={`/status/${order.code}`}
-            className='order-card'
-        >
-            <div className='order-header'>
-                <div className='order-code'>
-                    <Package size={20} />
-                    <span>Orden #{order.code}</span>
+    const renderOrderCard = (order) => {
+        const isPending = order.status === 'pendiente' || order.status === 'pending';
+        const linkTo = isPending ? `/checkout?order=${order.code}` : `/perfil/orden/${order.code}`;
+        
+        return (
+            <Link 
+                key={order.id} 
+                to={linkTo}
+                className={`order-card ${isPending ? 'order-pending' : ''}`}
+            >
+                <div className='order-header'>
+                    <div className='order-code'>
+                        <Package size={20} />
+                        <span>Orden #{order.code}</span>
+                    </div>
+                    <div className='order-status'>
+                        {getStatusIcon(order.status)}
+                        <span>{getStatusLabel(order.status)}</span>
+                    </div>
                 </div>
-                <div className='order-status'>
-                    {getStatusIcon(order.status)}
-                    <span>{getStatusLabel(order.status)}</span>
-                </div>
-            </div>
 
             <div className='order-info'>
                 <div className='order-date'>
@@ -82,20 +98,21 @@ export default function Ordenes () {
                 )}
             </div>
 
-            {order.order_items && order.order_items.length > 0 && (
+            {order.items && order.items.length > 0 && (
                 <div className='order-items'>
                     <p className='order-items-count'>
-                        {order.order_items.length} {order.order_items.length === 1 ? 'producto' : 'productos'}
+                        {order.items.length} {order.items.length === 1 ? 'producto' : 'productos'}
                     </p>
                     <ul className='order-items-list'>
-                        {order.order_items.slice(0, 3).map(item => (
+                        {order.items.slice(0, 3).map(item => (
                             <li key={item.id}>
-                                {item.quantity}x {item.name}
+                                {item.quantity}x {item.product_name || item.product?.nombre || 'Producto'}
+                                {item.tamano && <span className='item-size'> ({item.tamano})</span>}
                             </li>
                         ))}
-                        {order.order_items.length > 3 && (
+                        {order.items.length > 3 && (
                             <li className='more-items'>
-                                +{order.order_items.length - 3} más
+                                +{order.items.length - 3} más
                             </li>
                         )}
                     </ul>
@@ -107,10 +124,18 @@ export default function Ordenes () {
                     <span className='total-label'>Total:</span>
                     <span className='total-amount'>{formatPrice(order.total)}</span>
                 </div>
-                <ChevronRight size={20} className='order-arrow' />
+                <div className='order-action'>
+                    {isPending ? (
+                        <span className='action-label'>Completar pago</span>
+                    ) : (
+                        <span className='action-label'>Ver detalles</span>
+                    )}
+                    <ChevronRight size={20} className='order-arrow' />
+                </div>
             </div>
         </Link>
-    )
+        );
+    }
 
     return (
         <MainLayout>

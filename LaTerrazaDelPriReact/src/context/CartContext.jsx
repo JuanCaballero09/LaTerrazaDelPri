@@ -52,6 +52,15 @@ export function CartProvider({ children }) {
         }
     })
 
+    // Estado para tipo de entrega: 'domicilio' o 'recogida'
+    const [deliveryType, setDeliveryType] = useState(() => {
+        try {
+            return localStorage.getItem('cart_deliveryType') || 'domicilio'
+        } catch (e) {
+            return 'domicilio'
+        }
+    })
+
     // Persistir cambios del carrito en localStorage
     useEffect(() => {
         try {
@@ -96,6 +105,14 @@ export function CartProvider({ children }) {
             console.error('Error guardando costo de envío en localStorage:', e)
         }
     }, [deliveryCost])
+
+    useEffect(() => {
+        try {
+            localStorage.setItem('cart_deliveryType', deliveryType)
+        } catch (e) {
+            console.error('Error guardando tipo de entrega en localStorage:', e)
+        }
+    }, [deliveryType])
 
     // Estado y función para mostrar notificaciones (toast)
     // `toast` contiene { visible: boolean, message: string }
@@ -269,7 +286,10 @@ export function CartProvider({ children }) {
             selectedSede,
             setSelectedSede,
             deliveryCost,
-            setDeliveryCost
+            setDeliveryCost,
+            // Tipo de entrega
+            deliveryType,
+            setDeliveryType
         }}>
             {children}
         </CartContext.Provider>

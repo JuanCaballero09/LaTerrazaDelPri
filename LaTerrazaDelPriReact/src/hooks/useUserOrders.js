@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { getUserOrders } from '../api/users.api'
+import { getOrders } from '../api/orders.api'
 
 /**
  * Hook para obtener las órdenes de un usuario
- * @param {number} userId - ID del usuario
+ * @param {number} userId - ID del usuario (no se usa, se obtienen por token)
  * @returns {Object} { orders, loading, error, refetch }
  */
 export default function useUserOrders(userId) {
@@ -20,8 +20,9 @@ export default function useUserOrders(userId) {
         try {
             setLoading(true)
             setError(null)
-            const data = await getUserOrders(userId)
-            setOrders(data)
+            // Usar la API de órdenes que devuelve items con product_name
+            const response = await getOrders()
+            setOrders(response.data || [])
         } catch (err) {
             console.error('Error fetching user orders:', err)
             setError(err.response?.data?.error || 'Error al cargar las órdenes')

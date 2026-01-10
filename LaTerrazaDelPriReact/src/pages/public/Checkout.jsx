@@ -1,15 +1,18 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import useCart from '../../hooks/useCart';
 import { useCheckout } from '../../hooks/useCheckout';
 import useAuth from '../../hooks/useAuth';
-import { X, CreditCard, Smartphone, Banknote, Check, Loader } from 'lucide-react';
+import { getPaymentStatus, cancelPayment, getOrder } from '../../api/orders.api';
+import { X, CreditCard, Smartphone, Banknote, Check, Loader, Clock, XCircle, AlertCircle } from 'lucide-react';
 import './Checkout.css';
 
 export default function Checkout() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const orderCode = searchParams.get('order'); // Orden desde URL para completar pago
     const { user } = useAuth();
-    const { items, totalPrice, clearCart, address: cartAddress, addressData, selectedSede } = useCart();
+    const { items, totalPrice, clear, address: cartAddress, addressData, selectedSede, deliveryType, deliveryCost } = useCart();
     const { createOrderFromCart, processPayment, loading, error } = useCheckout();
 
     const [step, setStep] = useState(() => {
@@ -30,6 +33,7 @@ export default function Checkout() {
     });
 
     // Datos del checkout
+    // IMPORTANTE: Siempre priorizar valores del carrito (deliveryCost, deliveryType) sobre los guardados
     const [checkoutData, setCheckoutData] = useState(() => {
         try {
             const saved = localStorage.getItem('checkout_data')
@@ -39,7 +43,10 @@ export default function Checkout() {
                     ...parsed,
                     email: user?.email || parsed.email || '',
                     address: cartAddress || parsed.address || '',
-                    sede_id: selectedSede?.id || parsed.sede_id || null
+                    sede_id: selectedSede?.id || parsed.sede_id || null,
+                    // Siempre usar valores del carrito (no usar || porque 0 es válido)
+                    delivery_type: deliveryType ?? parsed.delivery_type ?? 'domicilio',
+                    delivery_cost: typeof deliveryCost === 'number' ? deliveryCost : (parsed.delivery_cost ?? 0)
                 }
             }
         } catch {}
@@ -57,7 +64,10 @@ export default function Checkout() {
             // Cupón
             couponCode: '',
             // Sede
-            sede_id: selectedSede?.id || null
+            sede_id: selectedSede?.id || null,
+            // Tipo de entrega
+            delivery_type: deliveryType ?? 'domicilio',
+            delivery_cost: typeof deliveryCost === 'number' ? deliveryCost : 0
         }
     });
 
@@ -96,22 +106,87 @@ export default function Checkout() {
     const [nequiData, setNequiData] = useState(() => {
         try {
             const saved = localStorage.getItem('checkout_nequiData')
-            return saved ? JSON.parse(saved) : { phoneNumber: '' }
+            return saved ? JSON.parse(saved) : { phoneNumber: user?.telefono || '' }
         } catch {
-            return { phoneNumber: '' }
+            return { phoneNumber: user?.telefono || '' }
         }
     });
 
-    // Sincronizar dirección del carrito con checkoutData
+    // Actualizar nequiData cuando el usuario cargue
     useEffect(() => {
-        if (cartAddress) {
-            setCheckoutData(prev => ({
-                ...prev,
-                address: cartAddress,
-                sede_id: selectedSede?.id || null
-            }));
+        if (user?.telefono && !nequiData.phoneNumber) {
+            setNequiData({ phoneNumber: user.telefono });
         }
-    }, [cartAddress, selectedSede]);
+    }, [user]);
+
+    // Sincronizar datos del carrito con checkoutData
+    // Se ejecuta cada vez que cambia la dirección, sede, tipo de entrega o costo
+    useEffect(() => {
+        setCheckoutData(prev => {
+            // Solo actualizar si hay cambios reales
+            const newDeliveryCost = typeof deliveryCost === 'number' ? deliveryCost : prev.delivery_cost;
+            const newDeliveryType = deliveryType ?? prev.delivery_type;
+            const newAddress = cartAddress || prev.address;
+            const newSedeId = selectedSede?.id ?? prev.sede_id;
+            
+            // Si recogida, forzar delivery_cost a 0
+            const finalDeliveryCost = newDeliveryType === 'recogida' ? 0 : newDeliveryCost;
+            
+            // Evitar actualización innecesaria
+            if (
+                prev.address === newAddress &&
+                prev.sede_id === newSedeId &&
+                prev.delivery_type === newDeliveryType &&
+                prev.delivery_cost === finalDeliveryCost
+            ) {
+                return prev;
+            }
+            
+            console.log('🔄 Sincronizando checkoutData:', {
+                delivery_type: newDeliveryType,
+                delivery_cost: finalDeliveryCost,
+                sede_id: newSedeId
+            });
+            
+            return {
+                ...prev,
+                address: newAddress,
+                sede_id: newSedeId,
+                delivery_type: newDeliveryType,
+                delivery_cost: finalDeliveryCost
+            };
+        });
+    }, [cartAddress, selectedSede, deliveryType, deliveryCost]);
+
+    // Resetear checkout si hay items en el carrito pero no hay orden activa
+    // Esto asegura que al entrar desde el carrito se empiece desde el paso 1
+    useEffect(() => {
+        const savedOrder = localStorage.getItem('checkout_currentOrder');
+        const savedStep = localStorage.getItem('checkout_step');
+        
+        // Si hay items en el carrito y no hay orden guardada, resetear a paso 1
+        if (items.length > 0 && !savedOrder) {
+            console.log('🔄 Reseteando checkout - nueva sesión desde carrito');
+            setStep(1);
+            setCurrentOrder(null);
+            localStorage.removeItem('checkout_step');
+            localStorage.removeItem('checkout_currentOrder');
+        }
+        // Si hay una orden guardada pero estamos en paso 2 y no hay currentOrder en state
+        // significa que es una nueva sesión - verificar si la orden es válida
+        else if (savedOrder && savedStep === '2' && !currentOrder) {
+            const parsed = JSON.parse(savedOrder);
+            setCurrentOrder(parsed);
+        }
+        // Si el step guardado es 3 pero no hay orden, forzar paso 1
+        else if (savedStep === '3' && !savedOrder) {
+            console.log('🔄 Reseteando checkout - paso 3 sin orden');
+            setStep(1);
+            setCurrentOrder(null);
+            localStorage.removeItem('checkout_step');
+            localStorage.removeItem('checkout_currentOrder');
+        }
+    }, []);
 
     // Persistir datos en localStorage
     useEffect(() => {
@@ -143,8 +218,13 @@ export default function Checkout() {
     }, [nequiData]);
 
     useEffect(() => {
-        // Si el carrito está vacío, redirigir
-        if (items.length === 0) {
+        // Si viene con orderCode desde URL, no validar carrito vacío
+        if (orderCode && currentOrder) {
+            return;
+        }
+        
+        // Si el carrito está vacío y no hay orden desde URL, redirigir
+        if (items.length === 0 && !orderCode) {
             navigate('/carrito');
         }
 
@@ -158,7 +238,7 @@ export default function Checkout() {
                 phone: user.telefono || ''
             }));
         }
-    }, [items, user, navigate]);
+    }, [items, user, navigate, orderCode, currentOrder]);
 
     const formatCurrency = (value) => {
         return new Intl.NumberFormat('es-CO', {
@@ -168,6 +248,34 @@ export default function Checkout() {
         }).format(value);
     };
 
+    // Obtener el costo de envío actual (priorizar checkoutData pero usar deliveryCost como fallback)
+    const currentDeliveryCost = checkoutData.delivery_cost ?? deliveryCost ?? 0;
+
+    // Calcular total (productos + envío si es domicilio)
+    const subtotalConEnvio = checkoutData.delivery_type === 'recogida' 
+        ? totalPrice 
+        : totalPrice + currentDeliveryCost;
+
+    // Calcular tarifa Wompi: 2.65% + $700 + IVA 19%
+    // Solo aplica para tarjeta y nequi
+    const calculateWompiFee = (amount) => {
+        const baseFee = (amount * 0.0265) + 700; // 2.65% + $700
+        const feeWithIva = baseFee * 1.19; // + IVA 19%
+        return Math.round(feeWithIva);
+    };
+
+    const wompiFee = (paymentMethod === 'card' || paymentMethod === 'nequi') 
+        ? calculateWompiFee(subtotalConEnvio) 
+        : 0;
+
+    const total = subtotalConEnvio + wompiFee;
+
+    // Estado para polling del pago
+    const [paymentStatus, setPaymentStatus] = useState(null);
+    const [pollingActive, setPollingActive] = useState(false);
+    const [pollingTime, setPollingTime] = useState(0);
+    const [redirectCountdown, setRedirectCountdown] = useState(5); // Countdown para redirección
+
     const clearCheckoutData = () => {
         localStorage.removeItem('checkout_step');
         localStorage.removeItem('checkout_currentOrder');
@@ -176,6 +284,16 @@ export default function Checkout() {
         localStorage.removeItem('checkout_cardData');
         localStorage.removeItem('checkout_nequiData');
     };
+
+    // Efecto para redirigir INMEDIATAMENTE cuando el pago es aprobado
+    useEffect(() => {
+        if (paymentStatus === 'approved' && step === 3) {
+            // Redirigir inmediatamente sin espera
+            clearCheckoutData();
+            clear(); // Limpiar carrito
+            navigate('/perfil/ordenes');
+        }
+    }, [paymentStatus, step, navigate, clear]);
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -204,8 +322,11 @@ export default function Checkout() {
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(checkoutData.email)) return 'Email inválido';
         }
         
-        if (!checkoutData.address.trim()) return 'La dirección es requerida';
-        if (checkoutData.address.length < 10) return 'La dirección debe tener al menos 10 caracteres';
+        // Solo validar dirección si es domicilio
+        if (checkoutData.delivery_type === 'domicilio') {
+            if (!checkoutData.address.trim()) return 'La dirección es requerida para domicilio';
+            if (checkoutData.address.length < 10) return 'La dirección debe tener al menos 10 caracteres';
+        }
         
         return null;
     };
@@ -218,6 +339,15 @@ export default function Checkout() {
         }
 
         try {
+            // Debug: verificar datos que se envían
+            console.log('📋 checkoutData a enviar:', {
+                delivery_type: checkoutData.delivery_type,
+                delivery_cost: checkoutData.delivery_cost,
+                address: checkoutData.address,
+                sede_id: checkoutData.sede_id
+            });
+            console.log('🛒 deliveryCost del carrito:', deliveryCost);
+            
             // Crear la orden
             const order = await createOrderFromCart(checkoutData);
             setCurrentOrder(order);
@@ -275,12 +405,85 @@ export default function Checkout() {
 
             const paymentResponse = await processPayment(currentOrder.code, paymentData);
             
-            // Limpiar datos de checkout al completar
-            clearCheckoutData();
+            // Para efectivo, completar inmediatamente
+            if (paymentMethod === 'cash') {
+                clear();
+                clearCheckoutData();
+                setPaymentStatus('approved');
+                setStep(3);
+                return;
+            }
+
+            // Para tarjeta y nequi, iniciar polling
             setStep(3);
+            setPaymentStatus('pending');
+            setPollingActive(true);
+            setPollingTime(0);
+            
         } catch (err) {
             console.error('Error procesando pago:', err);
         }
+    };
+
+    // Polling para verificar estado del pago (tarjeta/nequi)
+    const pollingIntervalRef = useRef(null);
+    const pollingTimerRef = useRef(null);
+
+    useEffect(() => {
+        if (pollingActive && currentOrder && (paymentMethod === 'card' || paymentMethod === 'nequi')) {
+            // Polling cada 3 segundos
+            pollingIntervalRef.current = setInterval(async () => {
+                try {
+                    const response = await getPaymentStatus(currentOrder.code);
+                    const status = response.data?.status;
+                    
+                    console.log('📡 Estado del pago:', status);
+                    
+                    if (status === 'approved') {
+                        setPaymentStatus('approved');
+                        setPollingActive(false);
+                        clear();
+                        clearCheckoutData();
+                    } else if (status === 'declined' || status === 'cancelled') {
+                        setPaymentStatus(status);
+                        setPollingActive(false);
+                    }
+                } catch (err) {
+                    console.error('Error consultando estado:', err);
+                }
+            }, 3000);
+
+            // Timer para contar tiempo de espera
+            pollingTimerRef.current = setInterval(() => {
+                setPollingTime(prev => prev + 1);
+            }, 1000);
+
+            return () => {
+                clearInterval(pollingIntervalRef.current);
+                clearInterval(pollingTimerRef.current);
+            };
+        }
+    }, [pollingActive, currentOrder, paymentMethod]);
+
+    // Cancelar pago
+    const handleCancelPayment = async () => {
+        if (!currentOrder) return;
+        
+        try {
+            await cancelPayment(currentOrder.code);
+            setPaymentStatus('cancelled');
+            setPollingActive(false);
+        } catch (err) {
+            console.error('Error cancelando pago:', err);
+            alert('No se pudo cancelar el pago');
+        }
+    };
+
+    // Formatear tiempo de espera
+    const formatWaitTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
     if (items.length === 0) {
@@ -381,19 +584,38 @@ export default function Checkout() {
                                 )}
 
                                 <div className="form-section">
-                                    <h3>Dirección de Entrega</h3>
-                                    <div className="form-group">
-                                        <label>Dirección completa *</label>
-                                        <textarea
-                                            name="address"
-                                            value={checkoutData.address}
-                                            placeholder="Calle, número, apartamento, referencias..."
-                                            rows="3"
-                                            readOnly
-                                            disabled
-                                            style={{ background: '#f5f5f5', cursor: 'not-allowed' }}
-                                        />
+                                    <h3>{checkoutData.delivery_type === 'recogida' ? 'Recoger en Sede' : 'Dirección de Entrega'}</h3>
+                                    
+                                    <div className="delivery-type-badge">
+                                        {checkoutData.delivery_type === 'recogida' ? (
+                                            <span className="badge badge-pickup">🏪 Recoger en sede</span>
+                                        ) : (
+                                            <span className="badge badge-delivery">🛵 Domicilio</span>
+                                        )}
                                     </div>
+
+                                    {checkoutData.delivery_type === 'domicilio' && (
+                                        <div className="form-group">
+                                            <label>Dirección completa *</label>
+                                            <textarea
+                                                name="address"
+                                                value={checkoutData.address}
+                                                placeholder="Calle, número, apartamento, referencias..."
+                                                rows="3"
+                                                readOnly
+                                                disabled
+                                                style={{ background: '#f5f5f5', cursor: 'not-allowed' }}
+                                            />
+                                        </div>
+                                    )}
+                                    
+                                    {checkoutData.delivery_type === 'recogida' && selectedSede && (
+                                        <div className="pickup-info">
+                                            <p><strong>Sede:</strong> {selectedSede.nombre}</p>
+                                            <p><strong>Dirección:</strong> {selectedSede.direccion}, {selectedSede.municipio}</p>
+                                            {selectedSede.telefono && <p><strong>Teléfono:</strong> {selectedSede.telefono}</p>}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <button 
@@ -554,7 +776,7 @@ export default function Checkout() {
 
                                 {paymentMethod === 'cash' && (
                                     <div className="cash-info">
-                                        <p>✅ Pagarás <strong>{formatCurrency(total)}</strong> en efectivo al recibir tu pedido.</p>
+                                        <p>Pagarás <strong>{formatCurrency(total)}</strong> en efectivo al recibir tu pedido.</p>
                                     </div>
                                 )}
 
@@ -599,7 +821,7 @@ export default function Checkout() {
                                                 Procesando...
                                             </>
                                         ) : (
-                                            `Pagar ${formatCurrency(totalPrice)}`
+                                            `Pagar ${formatCurrency(total)}`
                                         )}
                                     </button>
                                 </div>
@@ -609,37 +831,154 @@ export default function Checkout() {
                         {/* Step 3: Confirmación */}
                         {step === 3 && currentOrder && (
                             <div className="checkout-success">
-                                <div className="success-icon">
-                                    <Check size={48} />
-                                </div>
-                                <h2>¡Pedido Confirmado!</h2>
-                                <p className="order-code">Orden: <strong>{currentOrder.code}</strong></p>
-                                
-                                {paymentMethod === 'cash' && (
-                                    <p className="success-message">
-                                        Tu pedido ha sido confirmado. Pagarás <strong>{formatCurrency(totalPrice)}</strong> en efectivo al recibirlo.
-                                    </p>
-                                )}
-                                {paymentMethod === 'card' && (
-                                    <p className="success-message">
-                                        Tu pago está siendo procesado. Recibirás una confirmación por email.
-                                    </p>
-                                )}
-                                {paymentMethod === 'nequi' && (
-                                    <p className="success-message">
-                                        Revisa tu app de Nequi para aprobar el pago.
-                                    </p>
+                                {/* Estado: Esperando confirmación (tarjeta/nequi) */}
+                                {(paymentMethod === 'card' || paymentMethod === 'nequi') && paymentStatus === 'pending' && (
+                                    <>
+                                        <div className="pending-icon">
+                                            <Loader className="spin" size={48} />
+                                        </div>
+                                        <h2>Procesando Pago...</h2>
+                                        <p className="order-code">Orden: <strong>{currentOrder.code}</strong></p>
+                                        
+                                        {paymentMethod === 'card' && (
+                                            <p className="pending-message">
+                                                Estamos verificando tu pago con tarjeta. Esto puede tomar unos segundos.
+                                            </p>
+                                        )}
+                                        {paymentMethod === 'nequi' && (
+                                            <div className="nequi-pending">
+                                                <p className="pending-message">
+                                                    <strong>📱 Revisa tu app de Nequi</strong>
+                                                </p>
+                                                <p className="pending-hint">
+                                                    Abre la app de Nequi en tu celular y aprueba la solicitud de pago.
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        <div className="wait-timer">
+                                            <Clock size={16} />
+                                            <span>Tiempo de espera: {formatWaitTime(pollingTime)}</span>
+                                        </div>
+
+                                        {/* Mostrar botón cancelar después de 30 segundos para tarjeta, 60 para nequi */}
+                                        {((paymentMethod === 'card' && pollingTime >= 30) || 
+                                          (paymentMethod === 'nequi' && pollingTime >= 60)) && (
+                                            <button 
+                                                className="btn-cancel"
+                                                onClick={handleCancelPayment}
+                                            >
+                                                <XCircle size={18} />
+                                                Cancelar pago
+                                            </button>
+                                        )}
+                                    </>
                                 )}
 
-                                <button 
-                                    className="btn-primary-full"
-                                    onClick={() => {
-                                        clearCheckoutData();
-                                        navigate('/');
-                                    }}
-                                >
-                                    Volver al Inicio
-                                </button>
+                                {/* Estado: Pago aprobado */}
+                                {paymentStatus === 'approved' && (
+                                    <>
+                                        <div className="success-icon">
+                                            <Check size={48} />
+                                        </div>
+                                        <h2>¡Pago Confirmado!</h2>
+                                        <p className="order-code">Orden: <strong>{currentOrder.code}</strong></p>
+                                        
+                                        <p className="success-message">
+                                            Tu pago de <strong>{formatCurrency(total)}</strong> ha sido procesado exitosamente.
+                                            {paymentMethod !== 'cash' && ' Recibirás un email de confirmación.'}
+                                        </p>
+
+                                        <p className="redirect-countdown">
+                                            Serás redirigido a tus órdenes en <strong>{redirectCountdown}</strong> segundos...
+                                        </p>
+
+                                        <button 
+                                            className="btn-primary-full"
+                                            onClick={() => {
+                                                clearCheckoutData();
+                                                navigate('/perfil/ordenes');
+                                            }}
+                                        >
+                                            Ver mis órdenes ahora
+                                        </button>
+                                    </>
+                                )}
+
+                                {/* Estado: Pago rechazado */}
+                                {paymentStatus === 'declined' && (
+                                    <>
+                                        <div className="error-icon">
+                                            <XCircle size={48} />
+                                        </div>
+                                        <h2>Pago Rechazado</h2>
+                                        <p className="order-code">Orden: <strong>{currentOrder.code}</strong></p>
+                                        
+                                        <p className="error-message">
+                                            Tu pago no pudo ser procesado. Por favor verifica los datos de tu tarjeta o intenta con otro método de pago.
+                                        </p>
+
+                                        <button 
+                                            className="btn-primary-full"
+                                            onClick={() => {
+                                                setStep(2);
+                                                setPaymentStatus(null);
+                                            }}
+                                        >
+                                            Intentar de nuevo
+                                        </button>
+                                    </>
+                                )}
+
+                                {/* Estado: Pago cancelado */}
+                                {paymentStatus === 'cancelled' && (
+                                    <>
+                                        <div className="warning-icon">
+                                            <AlertCircle size={48} />
+                                        </div>
+                                        <h2>Pago Cancelado</h2>
+                                        <p className="order-code">Orden: <strong>{currentOrder.code}</strong></p>
+                                        
+                                        <p className="warning-message">
+                                            El pago ha sido cancelado. Puedes intentar de nuevo o elegir otro método de pago.
+                                        </p>
+
+                                        <button 
+                                            className="btn-primary-full"
+                                            onClick={() => {
+                                                setStep(2);
+                                                setPaymentStatus(null);
+                                            }}
+                                        >
+                                            Volver a intentar
+                                        </button>
+                                    </>
+                                )}
+
+                                {/* Estado: Efectivo (confirmación inmediata) */}
+                                {paymentMethod === 'cash' && paymentStatus === 'approved' && (
+                                    <>
+                                        <div className="success-icon">
+                                            <Check size={48} />
+                                        </div>
+                                        <h2>¡Pedido Confirmado!</h2>
+                                        <p className="order-code">Orden: <strong>{currentOrder.code}</strong></p>
+                                        
+                                        <p className="success-message">
+                                            Tu pedido ha sido confirmado. Pagarás <strong>{formatCurrency(total)}</strong> en efectivo al {checkoutData.delivery_type === 'recogida' ? 'recogerlo' : 'recibirlo'}.
+                                        </p>
+
+                                        <button 
+                                            className="btn-primary-full"
+                                            onClick={() => {
+                                                clearCheckoutData();
+                                                navigate('/perfil/ordenes');
+                                            }}
+                                        >
+                                            Ver mis órdenes
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         )}
                     </div>
@@ -647,11 +986,21 @@ export default function Checkout() {
                     {/* Right Column - Resumen */}
                     <div className="checkout-summary">
                         <h3>Resumen del Pedido</h3>
+                        
+                        {/* Tipo de entrega */}
+                        <div className="summary-delivery-type">
+                            {checkoutData.delivery_type === 'recogida' ? (
+                                <span className="delivery-badge pickup">🏪 Recoger en sede</span>
+                            ) : (
+                                <span className="delivery-badge delivery">🛵 Domicilio</span>
+                            )}
+                        </div>
+
                         <div className="summary-items">
                             {items.map((item, index) => (
-                                <div key={`${item.id}-${index}`} className="summary-item">
+                                <div key={`${item.id}-${item.tamano_selected || ''}-${index}`} className="summary-item">
                                     <span className="item-name">
-                                        {item.nombre} x {item.qty || 1}
+                                        {item.nombre}{item.tamano_selected ? ` (${item.tamano_selected})` : ''} x {item.qty || 1}
                                     </span>
                                     <span className="item-price">
                                         {formatCurrency((item.precio || 0) * (item.qty || 1))}
@@ -660,9 +1009,38 @@ export default function Checkout() {
                             ))}
                         </div>
                         <div className="summary-divider"></div>
+                        
+                        {/* Subtotal */}
+                        <div className="summary-subtotal">
+                            <span>Subtotal productos</span>
+                            <span>{formatCurrency(totalPrice)}</span>
+                        </div>
+                        
+                        {/* Costo de envío */}
+                        <div className="summary-shipping">
+                            <span>{checkoutData.delivery_type === 'recogida' ? 'Recogida' : 'Domicilio'}</span>
+                            <span className={checkoutData.delivery_type === 'recogida' ? 'free-shipping' : ''}>
+                                {checkoutData.delivery_type === 'recogida' ? '¡Gratis!' : formatCurrency(currentDeliveryCost)}
+                            </span>
+                        </div>
+
+                        {/* Tarifa Wompi (solo para tarjeta y nequi) */}
+                        {(paymentMethod === 'card' || paymentMethod === 'nequi') && (
+                            <div className="summary-fee">
+                                <span>
+                                    Tarifa procesamiento
+                                    <small className="fee-detail"> (2.65% + $700 + IVA)</small>
+                                </span>
+                                <span>{formatCurrency(wompiFee)}</span>
+                            </div>
+                        )}
+                        
+                        <div className="summary-divider"></div>
+                        
+                        {/* Total */}
                         <div className="summary-total">
-                            <span>Total</span>
-                            <span className="total-amount">{formatCurrency(totalPrice)}</span>
+                            <span>Total a pagar</span>
+                            <span className="total-amount">{formatCurrency(total)}</span>
                         </div>
                     </div>
                 </div>

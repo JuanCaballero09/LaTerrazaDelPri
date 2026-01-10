@@ -35,7 +35,7 @@ export default function Register () {
                 <input name='apellido' value={form.apellido} onChange={handleChange} />
 
                 <label>Teléfono</label>
-                <input name='telefono' value={form.telefono} onChange={handleChange} />
+                <input name='telefono' value={form.telefono} onChange={handleChange} maxLength={10} />
 
                 <label>Email</label>
                 <input name='email' type='email' value={form.email} onChange={handleChange} required />

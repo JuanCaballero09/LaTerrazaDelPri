@@ -436,7 +436,7 @@ export default function AddressModal({ isOpen, onClose, onSave, initialData = nu
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="ciudad">Ciudad</label>
+                                    <label htmlFor="ciudad">Municipio</label>
                                     <input 
                                         type="text"
                                         id="ciudad"

@@ -403,6 +403,219 @@
     to { transform: rotate(360deg); }
 }
 
+/* Delivery Type Badge */
+.delivery-type-badge {
+    margin-bottom: 16px;
+}
+
+.delivery-type-badge .badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.badge.badge-pickup {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.badge.badge-delivery {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+/* Pickup Info */
+.pickup-info {
+    background: #f5f5f5;
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid #4caf50;
+}
+
+.pickup-info p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.pickup-info p:first-child {
+    margin-top: 0;
+}
+
+.pickup-info p:last-child {
+    margin-bottom: 0;
+}
+
+/* Summary Delivery Type */
+.summary-delivery-type {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.delivery-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.delivery-badge.pickup {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.delivery-badge.delivery {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+/* Summary Subtotal and Shipping */
+.summary-subtotal,
+.summary-shipping {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.summary-shipping .free-shipping {
+    color: #2e7d32;
+    font-weight: 600;
+}
+
+/* Tarifa Wompi */
+.summary-fee {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 13px;
+    color: #888;
+}
+
+.summary-fee .fee-detail {
+    display: block;
+    font-size: 11px;
+    color: #aaa;
+}
+
+/* Payment Status Icons */
+.pending-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #fff3e0;
+    color: #f57c00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.error-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #ffebee;
+    color: #c62828;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.warning-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #fff8e1;
+    color: #f9a825;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+/* Payment Messages */
+.pending-message {
+    color: #f57c00;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.error-message {
+    color: #c62828;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.warning-message {
+    color: #f9a825;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.pending-hint {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Nequi Pending */
+.nequi-pending {
+    background: #e8f5e9;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.nequi-pending .pending-message {
+    color: #2e7d32;
+    margin-bottom: 8px;
+}
+
+/* Wait Timer */
+.wait-timer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Cancel Button */
+.btn-cancel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 2px solid #c62828;
+    color: #c62828;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #c62828;
+    color: white;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .checkout-content {
@@ -447,3 +660,20 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Countdown de redirección */
+.redirect-countdown {
+    font-size: 0.95rem;
+    color: #666;
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    background: #f0f9ff;
+    border-radius: 8px;
+    border: 1px solid #bae6fd;
+}
+
+.redirect-countdown strong {
+    color: #0369a1;
+    font-size: 1.1rem;
+}
+

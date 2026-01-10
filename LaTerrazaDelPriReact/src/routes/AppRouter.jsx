@@ -23,6 +23,7 @@ import ConfirmEmail from '../pages/public/Auth/ConfirmEmail'
 import ProtectedRoute from '../components/ProtectedRoute'
 import Dashboard from '../pages/private/Perfil/Dashboard'
 import Ordenes from '../pages/private/Perfil/Ordenes'
+import OrdenDetalle from '../pages/private/Perfil/OrdenDetalle'
 import Direcciones from '../pages/private/Perfil/Direcciones'
 import Configuracion from '../pages/private/Perfil/Configuracion'
 
@@ -70,6 +71,7 @@ export default function AppRouter () {
             {/* Protected routes */}
             <Route path='/perfil' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path='/perfil/ordenes' element={<ProtectedRoute><Ordenes /></ProtectedRoute>} />
+            <Route path='/perfil/orden/:code' element={<ProtectedRoute><OrdenDetalle /></ProtectedRoute>} />
             <Route path='/perfil/direcciones' element={<ProtectedRoute><Direcciones /></ProtectedRoute>} />
             <Route path='/perfil/configuracion' element={<ProtectedRoute><Configuracion /></ProtectedRoute>} />
 

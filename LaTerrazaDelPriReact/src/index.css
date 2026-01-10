@@ -16,6 +16,17 @@
     --background-color-gray-light-hover: #C6C6C6;
     --text-color: #1A1A1A;
     --text-color-light: #F8F9FA;
+
+    /* UI tokens para dashboard */
+    --card-bg: #ffffff;
+    --card-border: #eef2f6;
+    --muted: #6b7280;
+    --success: #10b981;
+    --danger: #ef4444;
+    --accent: #3b82f6;
+    --card-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+    --radius: 12px;
+    --gap: 16px;
 }
 
 html, body{
