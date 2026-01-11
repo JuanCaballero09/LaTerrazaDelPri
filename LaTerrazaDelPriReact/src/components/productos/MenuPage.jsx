@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import ProductoCard from './ProductoCard'
 import './MenuPage.css'
 import { useCategoriaIndex } from '../../hooks/Categorias/useCategoriaIndex'
+import CardSkeleton from '../ui/Skeletons/CardSkeleton'
 
 
 export default function MenuPage({ productos = [], loading = false }) {

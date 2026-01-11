@@ -128,7 +128,7 @@ export function DashboardMainMinimal() {
                     '#f59e0b',
                     '#10b981',
                     '#3b82f6',
-                    '#10b981',
+                    '#00b344ff',
                     '#ef4444'
                 ],
                 borderWidth: 0
@@ -136,22 +136,49 @@ export function DashboardMainMinimal() {
         ]
     };
 
-    // Configuración de gráfica de métodos de pago (Doughnut) - PSE removido
+    // Configuración de gráfica de métodos de pago (Doughnut)
+    // Debug: verificar estructura de datos
+    console.log('🔍 DEBUG Métodos de Pago:', {
+        ventasPorMetodoPago: stats.ventasPorMetodoPago,
+        ventasPorMetodoPago_labels: stats.ventasPorMetodoPago?.labels,
+        ventasPorMetodoPago_data: stats.ventasPorMetodoPago?.data,
+        pagosTarjeta: stats.pagosTarjeta,
+        pagosNequi: stats.pagosNequi,
+        pagosEfectivo: stats.pagosEfectivo
+    });
+
+    // Procesar datos de métodos de pago
+    let paymentLabels = ['Tarjeta', 'Nequi', 'Efectivo'];
+    let paymentData = [
+        stats.pagosTarjeta || 0,
+        stats.pagosNequi || 0,
+        stats.pagosEfectivo || 0
+    ];
+
+    // Si el backend envía la estructura completa, usar esos datos
+    if (stats.ventasPorMetodoPago?.labels && stats.ventasPorMetodoPago.labels.length > 0) {
+        paymentLabels = stats.ventasPorMetodoPago.labels;
+        paymentData = stats.ventasPorMetodoPago.data;
+        
+        // Asegurarse de que "Efectivo" esté incluido si no viene del backend
+        if (!paymentLabels.some(label => label.toLowerCase().includes('efectivo') || label.toLowerCase() === 'cash')) {
+            paymentLabels.push('Efectivo');
+            paymentData.push(stats.pagosEfectivo || 0);
+        }
+    }
+
     const paymentMethodsData = {
-        labels: stats.ventasPorMetodoPago?.labels || ['Tarjeta', 'Nequi', 'Efectivo'],
+        labels: paymentLabels,
         datasets: [
             {
-                data: stats.ventasPorMetodoPago?.data || [
-                    stats.pagosTarjeta,
-                    stats.pagosNequi,
-                    stats.pagosEfectivo
-                ],
+                data: paymentData,
                 backgroundColor: [
-                    '#3b82f6',
-                    '#ec4899',
-                    '#ffd700'
+                    '#3b82f6',  // Tarjeta - Azul
+                    '#ec4899',  // Nequi - Rosa
+                    '#ffd700'   // Efectivo - Amarillo
                 ],
-                borderWidth: 0
+                borderWidth: 0,
+                hoverOffset: 10
             }
         ]
     };
@@ -195,14 +222,25 @@ export function DashboardMainMinimal() {
                 position: 'bottom',
                 labels: {
                     padding: 15,
-                    font: { size: 12 }
+                    font: { size: 12 },
+                    usePointStyle: true,
+                    pointStyle: 'circle'
                 }
             },
             tooltip: {
                 backgroundColor: 'rgba(0, 0, 0, 0.8)',
                 padding: 12,
                 borderColor: '#ffd700',
-                borderWidth: 1
+                borderWidth: 1,
+                callbacks: {
+                    label: function(context) {
+                        const label = context.label || '';
+                        const value = context.parsed || 0;
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                        return `${label}: ${value} (${percentage}%)`;
+                    }
+                }
             }
         },
         cutout: '70%'
@@ -321,7 +359,7 @@ export function DashboardMainMinimal() {
             <div className="charts-grid">
                 {/* Gráfica de Ventas */}
                 <div className="chart-card">
-                    <h3 className="chart-title">📈 Ventas - Últimos 7 Días</h3>
+                    <h3 className="chart-title">Ventas - Últimos 7 Días</h3>
                     <div className="chart-container">
                         <Line data={salesChartData} options={chartOptions} />
                     </div>
@@ -329,7 +367,7 @@ export function DashboardMainMinimal() {
 
                 {/* Gráfica de Órdenes */}
                 <div className="chart-card">
-                    <h3 className="chart-title">📊 Órdenes - Últimos 7 Días</h3>
+                    <h3 className="chart-title">Órdenes - Últimos 7 Días</h3>
                     <div className="chart-container">
                         <Bar data={ordersChartData} options={chartOptions} />
                     </div>
@@ -337,7 +375,7 @@ export function DashboardMainMinimal() {
 
                 {/* Gráfica de Estados */}
                 <div className="chart-card chart-small">
-                    <h3 className="chart-title">📋 Órdenes por Estado</h3>
+                    <h3 className="chart-title">Órdenes por Estado</h3>
                     <div className="chart-container-small">
                         <Doughnut data={statusChartData} options={doughnutOptions} />
                     </div>
@@ -345,7 +383,7 @@ export function DashboardMainMinimal() {
 
                 {/* Gráfica de Métodos de Pago */}
                 <div className="chart-card chart-small">
-                    <h3 className="chart-title">💳 Métodos de Pago</h3>
+                    <h3 className="chart-title">Métodos de Pago</h3>
                     <div className="chart-container-small">
                         <Doughnut data={paymentMethodsData} options={doughnutOptions} />
                     </div>
@@ -378,7 +416,7 @@ export function DashboardMainMinimal() {
             {/* Información del Servidor */}
             {stats.serverInfo && (
                 <div className="server-info-card">
-                    <h3 className="section-title-minimal">🖥️ Información del Servidor</h3>
+                    <h3 className="section-title-minimal">Información del Servidor</h3>
                     <div className="server-info-grid">
                         <div className="server-info-item">
                             <span className="server-info-label">Rails</span>
@@ -413,7 +451,7 @@ export function DashboardMainMinimal() {
             {/* Órdenes Recientes */}
             <div className="recent-orders-minimal">
                 <div className="section-header-minimal">
-                    <h3 className="section-title-minimal">📋 Órdenes Recientes</h3>
+                    <h3 className="section-title-minimal">Órdenes Recientes</h3>
                     <a href="/admin/ordenes" className="view-all-link-minimal">Ver todas →</a>
                 </div>
                 

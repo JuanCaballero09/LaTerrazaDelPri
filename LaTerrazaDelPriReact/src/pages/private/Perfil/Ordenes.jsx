@@ -98,7 +98,7 @@ export default function Ordenes () {
                 )}
             </div>
 
-            {order.items && order.items.length > 0 && (
+            {/* {order.items && order.items.length > 0 && (
                 <div className='order-items'>
                     <p className='order-items-count'>
                         {order.items.length} {order.items.length === 1 ? 'producto' : 'productos'}
@@ -117,7 +117,7 @@ export default function Ordenes () {
                         )}
                     </ul>
                 </div>
-            )}
+            )} */}
 
             <div className='order-footer'>
                 <div className='order-total'>

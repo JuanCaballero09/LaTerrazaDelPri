@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import useAuth from '../../../hooks/useAuth'
+import useCart from '../../../hooks/useCart'
 import AuthLayout from '../../../layouts/AuthLayout'
 import './Auth.css'
 
@@ -8,6 +9,7 @@ export default function Register () {
     const [form, setForm] = useState({ nombre: '', apellido: '', email: '', telefono: '', password: '', password_confirmation: '' })
     const [error, setError] = useState(null)
     const { register, loading } = useAuth()
+    const { showToast } = useCart()
     const navigate = useNavigate()
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
@@ -17,6 +19,7 @@ export default function Register () {
         setError(null)
         const res = await register(form)
         if (res.success) {
+            showToast('¡Registro exitoso! Por favor revisa tu correo para confirmar tu cuenta', 5000)
             navigate('/login')
         } else {
             setError(res.error || 'Error al registrar')

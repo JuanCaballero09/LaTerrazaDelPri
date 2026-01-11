@@ -1,28 +1,32 @@
 import React, { useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { X, ArrowRight } from 'lucide-react'
 import useBusqueda from '../../../hooks/useBusqueda'
 import { slugify } from '../../../utils/slugify'
 import LoadingDots from '../LoadingDots'
+import ImageWithSkeleton from '../Skeletons/ImageWithSkeleton'
 import './BusquedaBar.css'
 
-export default function BusquedaBar() {
+// eslint-disable-next-line no-unused-vars
+export default function BusquedaBar({ isOpen, onClose }) {
     const { query, setQuery, results, loading, error, reconnect, clear } = useBusqueda('')
     const wrapperRef = useRef(null)
+    // eslint-disable-next-line no-unused-vars
+    const navigate = useNavigate()
 
     useEffect(() => {
         const handleOutside = (e) => {
             if (!wrapperRef.current) return
             if (!wrapperRef.current.contains(e.target)) {
-                // si hay texto activo, limpiar la búsqueda
-                if (query && query.trim() !== '') {
-                    clear()
-                }
+                // Cerrar el panel si se hace clic fuera
+                if (onClose) onClose()
             }
         }
 
         const handleKey = (e) => {
             if (e.key === 'Escape') {
                 clear()
+                if (onClose) onClose()
             }
         }
 
@@ -32,9 +36,14 @@ export default function BusquedaBar() {
             document.removeEventListener('pointerdown', handleOutside)
             document.removeEventListener('keydown', handleKey)
         }
-    }, [query, clear])
+    }, [query, clear, onClose])
 
     const handleChange = (e) => setQuery(e.target.value)
+    
+    const handleResultClick = () => {
+        clear()
+        if (onClose) onClose()
+    }
     
     const fixedPrecio = (precio) => {
         if (precio == null) return ''
@@ -43,15 +52,34 @@ export default function BusquedaBar() {
 
     const getName = (item) => item.nombre || item.name || item.title || item.descripcion || JSON.stringify(item).slice(0, 50)
 
+    const getImageUrl = (imagePath) => {
+        if (!imagePath) return null
+        // Si ya es una URL completa, devolverla tal cual
+        if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+            return imagePath
+        }
+        // Si es una ruta relativa, construir URL completa
+        const origin = window.location.origin
+        return `${origin}${imagePath}`
+    }
+
     return (
-        <div className="busqueda-bar" ref={wrapperRef}>
-            <input
-                className="busqueda-input"
-                value={query}
-                onChange={handleChange}
-                placeholder="Buscar productos..."
-                aria-label="Buscar productos"
-            />
+        <div className="busqueda-panel" ref={wrapperRef}>
+            <div className="busqueda-panel-content">
+                <div className="busqueda-header">
+                    <h3>Buscar Productos</h3>
+                    <button className="busqueda-close" onClick={onClose} aria-label="Cerrar búsqueda">
+                        <X size={24} />
+                    </button>
+                </div>
+                <input
+                    className="busqueda-input"
+                    value={query}
+                    onChange={handleChange}
+                    placeholder="Buscar productos..."
+                    aria-label="Buscar productos"
+                    autoFocus
+                />
 
             {/* No mostrar paneles si el campo está vacío */}
             {query.trim() !== '' && (
@@ -71,8 +99,12 @@ export default function BusquedaBar() {
                     {!loading && ((results.productos && results.productos.length > 0) || (results.grupos && results.grupos.length > 0)) && (
                         <div className="busqueda-results" role="list">
                             {results.productos && results.productos.length > 0 && (
-                                <div className="productos-list">
-                                    {results.productos.map((p, i) => {
+                                <div className="productos-section">
+                                    <div className="productos-header">
+                                        <h4>PRODUCTOS</h4>
+                                    </div>
+                                    <div className="productos-list-compact">
+                                    {results.productos.slice(0, 3).map((p, i) => {
                                         const productoId = p.id || p._id || p.producto_id || p.productoId || i
                                         const productoNombre = p.nombre || p.name || p.title || ''
 
@@ -92,12 +124,35 @@ export default function BusquedaBar() {
                                         const to = `/categoria/${categoriaSlug}/producto/${productoSlug}`
 
                                         return (
-                                            <Link to={to} className="busqueda-card" key={productoId} role="listitem">
-                                                <div className="busqueda-card-title">{getName(p)}</div>
-                                                {p.precio != null && <div className="busqueda-card-price">{fixedPrecio(p.precio)}</div>}
+                                            <Link to={to} className="busqueda-card-compact" key={productoId} role="listitem" onClick={handleResultClick}>
+                                                {p.imagen_url && (
+                                                    <div className="busqueda-card-thumb">
+                                                        <ImageWithSkeleton 
+                                                            src={getImageUrl(p.imagen_url)} 
+                                                            alt={getName(p)} 
+                                                            className="busqueda-thumb-img"
+                                                        />
+                                                    </div>
+                                                )}
+                                                <div className="busqueda-card-details">
+                                                    <div className="busqueda-card-name">{getName(p)}</div>
+                                                    {p.precio != null && <div className="busqueda-card-price">{fixedPrecio(p.precio)}</div>}
+                                                </div>
                                             </Link>
                                         )
                                     })}
+                                    </div>
+                                    
+                                    <Link 
+                                        to={`/busqueda?q=${encodeURIComponent(query)}`} 
+                                        className="busqueda-ver-todos"
+                                        onClick={() => {
+                                            if (onClose) onClose()
+                                        }}
+                                    >
+                                        <span>Buscar "{query}"</span>
+                                        <ArrowRight size={20} />
+                                    </Link>
                                 </div>
                             )}
                         </div>
@@ -108,6 +163,7 @@ export default function BusquedaBar() {
                     )}
                 </>
             )}
+            </div>
         </div>
     )
 }

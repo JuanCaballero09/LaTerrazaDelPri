@@ -10,7 +10,7 @@
 }
 
 .menu-group-title {
-	font-size: 1.25rem;
+	font-size: 1.5rem;
 	margin: 0 0 12px 6px;
 	color: var(--text-color);
 }
@@ -22,8 +22,8 @@
 }
 
 .slider-btn {
-	background: var(--text-color-light);
-	border: 1px solid var(--text-color);
+	background: var(--background-color-gray);
+	border: none;
 	padding: 8px 10px;
 	cursor: pointer;
 	border-radius: 6px;
@@ -34,11 +34,11 @@
 	justify-content: center;
 	flex: 0 0 auto;
     font-size: 1.5rem;
-    color: var(--text-color);
+    color: var(--text-color-light);
 }
 
 .slider-track {
-	overflow-x: hidden;
+	overflow-x: auto;
 	display: flex;
 	gap: 1.5rem;
 	scroll-behavior: smooth;
@@ -92,13 +92,16 @@
 
 @media only screen and (max-width: 768px) {
     .menu-page { padding: 16px 12px; }
-	.slider-btn { width: 35px; height: 35px; text-align: center; font-size: 1.2rem; color: var(--text-color); }
-	.slider-track .producto-card { width: 100%; }
-    .slider-track .card-skeleton { width: 100%; }
+	.slider-track { gap: 0.5rem;}
+	.slider-btn { width: 35px; height: 35px; text-align: center; font-size: 1.2rem; color: var(--text-color-light); display: none; }
+	.slider-track .producto-card { width: 50%; }
+	.slider-track .producto-card:hover { transform: none;}
+    .slider-track .card-skeleton { width: 50%; }
 }
 
 /* Tabletas (desde 600px hasta 1024px) */
 @media only screen and (min-width: 600px) and (max-width: 1024px) {
     .slider-track .producto-card { width: 250px; }
     .slider-track .card-skeleton { width: 250px; }
+	.slider-btn { display: block; }
 }

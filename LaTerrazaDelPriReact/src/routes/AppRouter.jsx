@@ -2,6 +2,7 @@ import {Routes, Route, Navigate } from 'react-router-dom'
 
 import { Status } from '../pages/public/Status'
 import Home  from '../pages/public/Home'
+import Busqueda from '../pages/public/Busqueda'
 
 import CategoriaShow from '../pages/public/Categorias/Show'
 import CategoriaIndex from '../pages/public/Categorias/Index'
@@ -48,6 +49,7 @@ export default function AppRouter () {
             <Route path='/' element={<Home />} />
             <Route path='/home' element={<Home />} />
             
+            <Route path='/busqueda' element={<Busqueda />} />
 
             <Route path='/categorias' element={<CategoriaIndex />} />
             <Route path='/categoria/:id' element={<CategoriaShow />} />

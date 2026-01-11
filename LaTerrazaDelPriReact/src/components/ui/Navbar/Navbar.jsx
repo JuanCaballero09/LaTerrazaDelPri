@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { House, Blocks, ShoppingCart, UserRoundPlus, User, LogOut, Gauge, SquareMenu} from 'lucide-react'
+import { House, Blocks, ShoppingCart, User, LogOut, Gauge, SquareMenu, Search} from 'lucide-react'
 import logo from '../../../assets/icons/LogoTerrazaDelPri.svg'
 import useCart from '../../../hooks/useCart'
 import useAuth from '../../../hooks/useAuth'
@@ -11,6 +11,7 @@ import './Navbar.css'
 export default function Navbar () {
     const [open, setOpen] = useState(false)
     const [userMenuOpen, setUserMenuOpen] = useState(false)
+    const [searchOpen, setSearchOpen] = useState(false)
 
     const { totalItems } = useCart()
     const { user, logout } = useAuth()
@@ -26,28 +27,36 @@ export default function Navbar () {
         <>
             <nav className='navbar'>
                 <div className='navbar-container'>
-                    <div className='navbar-logo'>
-                        <Link to='/' className='navbar-link'>
-                            <img
-                                src={logo} 
-                                alt="Logo La Terraza Del Pri" 
-                                loading="eager"
-                                fetchpriority="high"
-                                width="45"
-                                height="45"
-                                draggable="false" 
-                                onContextMenu={e => e.preventDefault()} 
-                            />
-                        </Link>
-                        La Terraza Del Pri
-                    </div>
+                    <div className='navbar-spacer'>
+                        <div className='navbar-logo'>
+                            <Link to='/' className='navbar-link'>
+                                <img
+                                    src={logo} 
+                                    alt="Logo La Terraza Del Pri" 
+                                    loading="eager"
+                                    fetchpriority="high"
+                                    width="45"
+                                    height="45"
+                                    draggable="false" 
+                                    onContextMenu={e => e.preventDefault()} 
+                                />
+                            </Link>
+                            La Terraza Del Pri
+                            
+                        </div>
+                        <ul className='navbar-links navbar-main-links'>
+                            <Link to='/' className='navbar-link'>Home</Link>
+                            <Link to='/menu' className='navbar-link'>Menu</Link>
+                            <Link to='/categorias' className='navbar-link'>Categorias</Link>
+                        </ul>
+
+                    </div> 
                     
-                    <BusquedaBar />
                     
                     <ul className='navbar-links'>
-                        <Link to='/' className='navbar-link'>Home</Link>
-                        <Link to='/menu' className='navbar-link'>Menu</Link>
-                        <Link to='/categorias' className='navbar-link'>Categorias</Link>
+                        <button className='navbar-link' onClick={() => setSearchOpen(!searchOpen)}>
+                            <Search />
+                        </button>
                         <Link to='/carrito' className='navbar-link'>
                             <ShoppingCart />
                             {totalItems > 0 && <span className="cart-badge">{displayCount}</span>}
@@ -86,17 +95,30 @@ export default function Navbar () {
                                 )}
                             </div>
                         ) : (
-                            <Link to='/login' className='navbar-link'><UserRoundPlus /></Link>
+                            <Link to='/login' className='navbar-link'><User /></Link>
                         )}
                     </ul>
 
-                    <button className='navbar-burger' onClick={() => setOpen(!open)}>
-                        <span/>
-                        <span/>
-                        <span/>
-                    </button>
+                    <div className='navbar-mobile-actions'>
+                        <button className='navbar-link-mobile' onClick={() => setSearchOpen(!searchOpen)}>
+                            <Search />
+                        </button>
+                        <button className='navbar-burger' onClick={() => setOpen(!open)}>
+                            <span/>
+                            <span/>
+                            <span/>
+                        </button>
+                    </div>
                 </div>
             </nav>
+
+            {/* Panel de búsqueda desplegable */}
+            {searchOpen && (
+                <>
+                    <div className="search-overlay" onClick={() => setSearchOpen(false)} />
+                    <BusquedaBar isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+                </>
+            )}
 
             {open && <div className="overlay" onClick={() => setOpen(false)} />}
 
@@ -139,7 +161,7 @@ export default function Navbar () {
                         <button className='logout-mobile' onClick={handleLogout}><LogOut />Cerrar Sesión</button>
                     </>
                 ) : (
-                    <Link to="/login" onClick={() => setOpen(false)}><UserRoundPlus />Iniciar sesión</Link>
+                    <Link to="/login" onClick={() => setOpen(false)}><User />Iniciar sesión</Link>
                 )}
             </aside>
         </>

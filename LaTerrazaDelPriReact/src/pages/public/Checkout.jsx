@@ -49,7 +49,7 @@ export default function Checkout() {
                     delivery_cost: typeof deliveryCost === 'number' ? deliveryCost : (parsed.delivery_cost ?? 0)
                 }
             }
-        } catch {}
+        } catch (e){console.error(e);}
         return {
             // Datos de invitado
             firstName: '',
@@ -218,14 +218,57 @@ export default function Checkout() {
     }, [nequiData]);
 
     useEffect(() => {
-        // Si viene con orderCode desde URL, no validar carrito vacío
-        if (orderCode && currentOrder) {
+        // Si viene con orderCode desde URL y no hay orden cargada, cargarla
+        if (orderCode && !currentOrder) {
+            const loadOrder = async () => {
+                setLoadingOrder(true);
+                try {
+                    const response = await getOrder(orderCode);
+                    const orderData = response.data;
+                    
+                    if (orderData) {
+                        console.log('Orden cargada:', orderData);
+                        console.log('Items de la orden:', orderData.items);
+                        setCurrentOrder(orderData);
+                        // Si la orden ya está pagada o completada, redirigir a su detalle
+                        if (orderData.status === 'pagado' || orderData.status === 'finalizado' || 
+                            orderData.status === 'tomado' || orderData.status === 'entregado') {
+                            navigate(`/perfil/orden/${orderCode}`, { replace: true });
+                            return;
+                        }
+                        
+                        // Establecer datos de checkout desde la orden
+                        setCheckoutData({
+                            delivery_type: orderData.delivery_type || 'domicilio',
+                            address: orderData.direccion || '',
+                            sede_id: orderData.sede_id || null,
+                            email: orderData.email || user?.email || '',
+                            firstName: orderData.first_name || user?.nombre || '',
+                            lastName: orderData.last_name || user?.apellido || '',
+                            phone: orderData.phone || user?.telefono || '',
+                            notes: orderData.notes || '',
+                            delivery_cost: orderData.delivery_cost || 0
+                        });
+                        
+                        // Si está pendiente, ir al paso de pago
+                        setStep(2);
+                    }
+                } catch (err) {
+                    console.error('Error cargando orden:', err);
+                    // Si no se puede cargar, redirigir al carrito
+                    navigate('/carrito');
+                } finally {
+                    setLoadingOrder(false);
+                }
+            };
+            loadOrder();
             return;
         }
         
         // Si el carrito está vacío y no hay orden desde URL, redirigir
-        if (items.length === 0 && !orderCode) {
+        if (items.length === 0 && !orderCode && !currentOrder) {
             navigate('/carrito');
+            return;
         }
 
         // Si es usuario autenticado, llenar email
@@ -252,9 +295,11 @@ export default function Checkout() {
     const currentDeliveryCost = checkoutData.delivery_cost ?? deliveryCost ?? 0;
 
     // Calcular total (productos + envío si es domicilio)
-    const subtotalConEnvio = checkoutData.delivery_type === 'recogida' 
-        ? totalPrice 
-        : totalPrice + currentDeliveryCost;
+    // Si hay orden cargada, usar su total; si no, calcular del carrito
+    const subtotalProductos = currentOrder ? (currentOrder.total - (currentOrder.delivery_cost || 0)) : totalPrice;
+    const subtotalConEnvio = currentOrder 
+        ? currentOrder.total 
+        : (checkoutData.delivery_type === 'recogida' ? totalPrice : totalPrice + currentDeliveryCost);
 
     // Calcular tarifa Wompi: 2.65% + $700 + IVA 19%
     // Solo aplica para tarjeta y nequi
@@ -275,6 +320,7 @@ export default function Checkout() {
     const [pollingActive, setPollingActive] = useState(false);
     const [pollingTime, setPollingTime] = useState(0);
     const [redirectCountdown, setRedirectCountdown] = useState(5); // Countdown para redirección
+    const [loadingOrder, setLoadingOrder] = useState(false); // Estado de carga de orden desde URL
 
     const clearCheckoutData = () => {
         localStorage.removeItem('checkout_step');
@@ -285,15 +331,26 @@ export default function Checkout() {
         localStorage.removeItem('checkout_nequiData');
     };
 
-    // Efecto para redirigir INMEDIATAMENTE cuando el pago es aprobado
+    // Efecto para iniciar countdown cuando el pago es aprobado
     useEffect(() => {
         if (paymentStatus === 'approved' && step === 3) {
-            // Redirigir inmediatamente sin espera
-            clearCheckoutData();
-            clear(); // Limpiar carrito
-            navigate('/perfil/ordenes');
+            // Iniciar countdown de 5 segundos
+            const countdownInterval = setInterval(() => {
+                setRedirectCountdown(prev => {
+                    if (prev <= 1) {
+                        clearInterval(countdownInterval);
+                        clearCheckoutData();
+                        clear(); // Limpiar carrito
+                        navigate(`/perfil/orden/${currentOrder?.code}`, { replace: true });
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+
+            return () => clearInterval(countdownInterval);
         }
-    }, [paymentStatus, step, navigate, clear]);
+    }, [paymentStatus, step, navigate, clear, currentOrder]);
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -442,8 +499,7 @@ export default function Checkout() {
                     if (status === 'approved') {
                         setPaymentStatus('approved');
                         setPollingActive(false);
-                        clear();
-                        clearCheckoutData();
+                        setRedirectCountdown(5); // Reiniciar countdown
                     } else if (status === 'declined' || status === 'cancelled') {
                         setPaymentStatus(status);
                         setPollingActive(false);
@@ -486,7 +542,22 @@ export default function Checkout() {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    if (items.length === 0) {
+    // Mostrar loading si se está cargando la orden
+    if (loadingOrder) {
+        return (
+            <div className="checkout-container">
+                <div className="checkout-wrapper">
+                    <div className="checkout-loading">
+                        <Loader className="spin" size={48} />
+                        <p>Cargando orden...</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Solo redirigir si no hay items Y no hay orden actual Y no hay orderCode
+    if (items.length === 0 && !currentOrder && !orderCode) {
         return null;
     }
 
@@ -588,9 +659,9 @@ export default function Checkout() {
                                     
                                     <div className="delivery-type-badge">
                                         {checkoutData.delivery_type === 'recogida' ? (
-                                            <span className="badge badge-pickup">🏪 Recoger en sede</span>
+                                            <span className="badge badge-pickup">Recoger en sede</span>
                                         ) : (
-                                            <span className="badge badge-delivery">🛵 Domicilio</span>
+                                            <span className="badge badge-delivery">Domicilio</span>
                                         )}
                                     </div>
 
@@ -660,7 +731,7 @@ export default function Checkout() {
                                         className={`payment-method ${paymentMethod === 'nequi' ? 'selected' : ''}`}
                                         onClick={() => setPaymentMethod('nequi')}
                                     >
-                                        <Smartphone size={24} />
+                                        <img src="/NequiLogo.png" alt="" />
                                         <span>Nequi</span>
                                     </div>
                                 </div>
@@ -864,43 +935,57 @@ export default function Checkout() {
                                         {/* Mostrar botón cancelar después de 30 segundos para tarjeta, 60 para nequi */}
                                         {((paymentMethod === 'card' && pollingTime >= 30) || 
                                           (paymentMethod === 'nequi' && pollingTime >= 60)) && (
-                                            <button 
-                                                className="btn-cancel"
-                                                onClick={handleCancelPayment}
-                                            >
-                                                <XCircle size={18} />
-                                                Cancelar pago
-                                            </button>
+                                            <>
+                                                <button 
+                                                    className="btn-secondary"
+                                                    onClick={() => {
+                                                        setPollingActive(false);
+                                                        setPaymentStatus(null);
+                                                        setStep(2);
+                                                    }}
+                                                    style={{ marginRight: '10px' }}
+                                                >
+                                                    Cambiar método de pago
+                                                </button>
+                                                <button 
+                                                    className="btn-cancel"
+                                                    onClick={handleCancelPayment}
+                                                >
+                                                    <XCircle size={18} />
+                                                    Cancelar orden
+                                                </button>
+                                            </>
                                         )}
                                     </>
                                 )}
 
-                                {/* Estado: Pago aprobado */}
-                                {paymentStatus === 'approved' && (
+                                {/* Estado: Pago aprobado (tarjeta/nequi) */}
+                                {paymentStatus === 'approved' && paymentMethod !== 'cash' && (
                                     <>
-                                        <div className="success-icon">
-                                            <Check size={48} />
+                                        <div className="success-icon success-animation">
+                                            <Check size={64} />
                                         </div>
                                         <h2>¡Pago Confirmado!</h2>
                                         <p className="order-code">Orden: <strong>{currentOrder.code}</strong></p>
                                         
                                         <p className="success-message">
-                                            Tu pago de <strong>{formatCurrency(total)}</strong> ha sido procesado exitosamente.
-                                            {paymentMethod !== 'cash' && ' Recibirás un email de confirmación.'}
+                                            Tu pago de <strong>{formatCurrency(total)}</strong> ha sido procesado exitosamente. Recibirás un email de confirmación.
                                         </p>
 
-                                        <p className="redirect-countdown">
-                                            Serás redirigido a tus órdenes en <strong>{redirectCountdown}</strong> segundos...
-                                        </p>
+                                        <div className="redirect-countdown">
+                                            <Clock size={20} />
+                                            <p>Redirigiendo en <strong>{redirectCountdown}</strong> segundo{redirectCountdown !== 1 ? 's' : ''}...</p>
+                                        </div>
 
                                         <button 
                                             className="btn-primary-full"
                                             onClick={() => {
                                                 clearCheckoutData();
-                                                navigate('/perfil/ordenes');
+                                                clear();
+                                                navigate(`/perfil/orden/${currentOrder.code}`, { replace: true });
                                             }}
                                         >
-                                            Ver mis órdenes ahora
+                                            Ver mi orden ahora
                                         </button>
                                     </>
                                 )}
@@ -918,15 +1003,26 @@ export default function Checkout() {
                                             Tu pago no pudo ser procesado. Por favor verifica los datos de tu tarjeta o intenta con otro método de pago.
                                         </p>
 
-                                        <button 
-                                            className="btn-primary-full"
-                                            onClick={() => {
-                                                setStep(2);
-                                                setPaymentStatus(null);
-                                            }}
-                                        >
-                                            Intentar de nuevo
-                                        </button>
+                                        <div className="checkout-actions">
+                                            <button 
+                                                className="btn-secondary-full"
+                                                onClick={() => {
+                                                    setStep(2);
+                                                    setPaymentStatus(null);
+                                                }}
+                                            >
+                                                Cambiar método de pago
+                                            </button>
+                                            <button 
+                                                className="btn-primary-full"
+                                                onClick={() => {
+                                                    setStep(2);
+                                                    setPaymentStatus(null);
+                                                }}
+                                            >
+                                                Intentar de nuevo
+                                            </button>
+                                        </div>
                                     </>
                                 )}
 
@@ -943,15 +1039,26 @@ export default function Checkout() {
                                             El pago ha sido cancelado. Puedes intentar de nuevo o elegir otro método de pago.
                                         </p>
 
-                                        <button 
-                                            className="btn-primary-full"
-                                            onClick={() => {
-                                                setStep(2);
-                                                setPaymentStatus(null);
-                                            }}
-                                        >
-                                            Volver a intentar
-                                        </button>
+                                        <div className="checkout-actions">
+                                            <button 
+                                                className="btn-secondary-full"
+                                                onClick={() => {
+                                                    setStep(2);
+                                                    setPaymentStatus(null);
+                                                }}
+                                            >
+                                                Cambiar método de pago
+                                            </button>
+                                            <button 
+                                                className="btn-primary-full"
+                                                onClick={() => {
+                                                    setStep(2);
+                                                    setPaymentStatus(null);
+                                                }}
+                                            >
+                                                Volver a intentar
+                                            </button>
+                                        </div>
                                     </>
                                 )}
 
@@ -990,37 +1097,45 @@ export default function Checkout() {
                         {/* Tipo de entrega */}
                         <div className="summary-delivery-type">
                             {checkoutData.delivery_type === 'recogida' ? (
-                                <span className="delivery-badge pickup">🏪 Recoger en sede</span>
+                                <span className="delivery-badge pickup">Recoger en sede</span>
                             ) : (
-                                <span className="delivery-badge delivery">🛵 Domicilio</span>
+                                <span className="delivery-badge delivery">Domicilio</span>
                             )}
                         </div>
 
                         <div className="summary-items">
-                            {items.map((item, index) => (
-                                <div key={`${item.id}-${item.tamano_selected || ''}-${index}`} className="summary-item">
-                                    <span className="item-name">
-                                        {item.nombre}{item.tamano_selected ? ` (${item.tamano_selected})` : ''} x {item.qty || 1}
-                                    </span>
-                                    <span className="item-price">
-                                        {formatCurrency((item.precio || 0) * (item.qty || 1))}
-                                    </span>
-                                </div>
-                            ))}
+                            {(currentOrder?.items || items).map((item, index) => {
+                                // Manejar items de la orden (estructura diferente)
+                                const itemName = item.product_name || item.nombre || 'Producto';
+                                const itemSize = item.tamano || item.tamano_selected || '';
+                                const itemQty = item.quantity || item.qty || 1;
+                                const itemPrice = item.precio || item.price || 0;
+                                
+                                return (
+                                    <div key={`${item.id}-${itemSize}-${index}`} className="summary-item">
+                                        <span className="item-name">
+                                            {itemName}{itemSize ? ` (${itemSize})` : ''} x {itemQty}
+                                        </span>
+                                        <span className="item-price">
+                                            {formatCurrency(itemPrice * itemQty)}
+                                        </span>
+                                    </div>
+                                );
+                            })}
                         </div>
                         <div className="summary-divider"></div>
                         
                         {/* Subtotal */}
                         <div className="summary-subtotal">
                             <span>Subtotal productos</span>
-                            <span>{formatCurrency(totalPrice)}</span>
+                            <span>{formatCurrency(subtotalProductos)}</span>
                         </div>
                         
                         {/* Costo de envío */}
                         <div className="summary-shipping">
                             <span>{checkoutData.delivery_type === 'recogida' ? 'Recogida' : 'Domicilio'}</span>
                             <span className={checkoutData.delivery_type === 'recogida' ? 'free-shipping' : ''}>
-                                {checkoutData.delivery_type === 'recogida' ? '¡Gratis!' : formatCurrency(currentDeliveryCost)}
+                                {checkoutData.delivery_type === 'recogida' ? '¡Gratis!' : formatCurrency(currentOrder?.delivery_cost || currentDeliveryCost)}
                             </span>
                         </div>
 

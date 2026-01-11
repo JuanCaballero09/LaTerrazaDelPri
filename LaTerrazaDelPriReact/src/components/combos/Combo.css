@@ -44,9 +44,8 @@
 }
 
 .combo-card {
-    background: var(--background-color);
+    background: var(--background-color-gray);
     border-radius: 12px;
-    padding: 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     text-align: center;
     display: flex;
@@ -54,7 +53,7 @@
     gap: 0.5rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     text-decoration: none;
-    color: var(--text-color);
+    color: var(--text-color-light);
 
 }
 
@@ -66,7 +65,7 @@
 .combo-card img {
     aspect-ratio: 4 / 3;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 12px 12px 0 0;
 }
 
 .combo-card h3 {
@@ -102,6 +101,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin: 0 0 1rem;
 }
 
 .combo-card-actions .btn:hover {
@@ -112,15 +112,57 @@
 
 /* Dispositivos Móviles (hasta 768px) */
 @media only screen and (max-width: 768px) {
+
+    .combo-grid {
+        grid-template-columns: 1fr 1fr;
+        padding: 0.5rem;
+        gap: .5rem;
+    }
+
+    .combo-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .combo-card .combo-price {
+        font-size: 1rem;
+    }
+
     .combo-card-actions .btn{
-        width: 100%;
-        font-size: 1.3rem;
+        padding: 0.5rem 0.8rem;
+        font-size: 1rem;
+    }
+
+    .combo-title{
+        font-size: 2rem;
+        padding: 10px 0;
+    }
+
+    .combo-more{
+        font-size: 1rem;
+        padding: 0.75rem 1.5rem;
     }
 }
 
 /* Tabletas (desde 600px hasta 1024px) */
 @media only screen and (min-width: 600px) and (max-width: 1024px) {
+    .combo-grid {
+        gap: 1rem;
+    }
+
     .combo-card-actions .btn{
         font-size: 1.5rem;
+    }
+
+    .combo-card h3 {
+        font-size: 2rem;
+    }
+
+    .combo-card .combo-price {
+        font-size: 1.5rem;
+    }
+
+    .combo-title{
+        font-size: 2.5rem;
+        padding: 15px 0;
     }
 }

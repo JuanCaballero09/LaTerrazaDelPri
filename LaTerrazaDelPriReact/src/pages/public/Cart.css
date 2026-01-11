@@ -95,6 +95,7 @@
     margin:8px 0;
     font-size: 1.2rem;
     border: 2px solid #aaa;
+    border-radius: 6px;
 }
 
 .cart-checkout input:active, .cart-checkout input:focus{
@@ -109,7 +110,7 @@
     font-size: 1.2rem;
     border: 2px solid #aaa;
     background: var(--background-color);
-    border-radius: 0;
+    border-radius: 6px;
 }
 
 .cart-checkout select:active, .cart-checkout select:focus{
@@ -128,6 +129,7 @@
     font-size: 1.2rem;
     cursor: pointer;
     transition: all 0.2s ease;
+    border-radius: 6px;
 }
 
 .cart-checkout-ubicacion:hover{
@@ -136,12 +138,36 @@
     border-color: var(--primary-color);
 }
 
+.btn-address{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    padding: 8px 12px;
+    background: var(--background-color-gray-light);
+    width: 80%;
+    margin: 0 auto;
+    border: 2px solid var(--background-color-gray);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-weight: 600; 
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+}
+
+.btn-address:hover{
+    background: var(--border-color);
+}
+
 .btn-pay{
     width: 100%;
     padding: 10px;
     background: var(--primary-color);
     border: 0;
-    color: #111;
+    color: var(--text-color);
     font-weight: 600; 
     cursor: pointer;
     margin-top: 10px;
@@ -425,8 +451,8 @@
     align-items: center;
     gap: 10px;
     padding: 14px 16px;
-    border: 2px solid #ddd;
-    border-radius: 10px;
+    border: 2px solid #aaa;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
     background: var(--background-color);
@@ -443,8 +469,8 @@
 }
 
 .delivery-option input[type="radio"] {
-    width: 18px;
-    height: 18px;
+    aspect-ratio: 1 / 1;
+    width: 20px;
     accent-color: var(--primary-color);
     cursor: pointer;
     margin: 0;
@@ -454,6 +480,11 @@
     font-size: 1rem;
     font-weight: 500;
     color: var(--text-color);
+    display: flex;
+    flex-direction: row;
+    gap: .5rem;
+    justify-content: center;
+    align-items: center;
 }
 
 .delivery-option.selected span {

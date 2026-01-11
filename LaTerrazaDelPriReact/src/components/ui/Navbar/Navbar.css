@@ -8,13 +8,20 @@
 }
 
 .navbar-container {
-    max-width: 1350px;
+    max-width: 1400px;
     margin: auto;
     padding: 1rem 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+}
+
+.navbar-spacer{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-direction: row;
 }
 
 .navbar-logo {
@@ -26,7 +33,11 @@
     text-decoration: none;
     width: 100%;
     max-width: 300px;
-    gap: 1rem;
+    gap: 1.2rem;
+}
+
+.navbar-logo a:focus {
+    outline: none;
 }
 
 .navbar-logo img {
@@ -35,6 +46,21 @@
     border: 1px solid var(--primary-color);
     outline: 2px solid var(--primary-color);
     outline-offset: 5px;
+}
+
+.navbar-main-links a{
+    padding: .5rem 1rem;
+    border-radius: 16px !important;
+}
+
+.navbar-main-links a:hover{
+    background-color: var(--primary-color);
+    color: var(--text-color);
+
+}
+
+.navbar-link{
+    display: flex;
 }
 
 .navbar-links {
@@ -75,18 +101,24 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    padding: .5rem 1rem;
-    border-radius: 16px;
+    padding: .5rem .5rem;
+    border-radius: 200px;
     font-weight: 500;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     text-decoration: none;
     color: var(--primary-color);
     transition: all 0.2s ease-in-out;
+    border: 2px solid transparent;
+    background: transparent;
+}
+
+.navbar-links a:focus, .navbar-links button:focus {
+    outline: none;
+    border: 2px solid var(--primary-color);
 }
 
 .navbar-links a:hover, .navbar-links button:hover {
-    background-color: var(--primary-color);
-    color: var(--text-color);
+    border-color: var(--primary-color);
 }
 
 .navbar-links a:hover .cart-badge {
@@ -200,6 +232,28 @@
     cursor: pointer;
 }
 
+.navbar-mobile-actions {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.navbar-link-mobile {
+    background: none;
+    border: none;
+    color: var(--background-color);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.navbar-link-mobile:hover {
+    transform: scale(1.1);
+}
+
 .navbar-burger span {
     width: 24px;
     height: 2px;
@@ -210,6 +264,13 @@
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.4);
+    z-index: 998;
+}
+
+.search-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
     z-index: 998;
 }
 
@@ -346,8 +407,17 @@
 
 /* Dispositivos Móviles (hasta 768px) */
 @media only screen and (max-width: 768px) {
+    .navbar-logo {
+        max-width: 200px;
+        font-size: 1rem;
+    }
+    
     .navbar-links {
         display: none;
+    }
+
+    .navbar-mobile-actions {
+        display: flex;
     }
 
     .navbar-burger {
@@ -388,9 +458,6 @@
 
 /* Tabletas (desde 600px hasta 1024px) */
 @media only screen and (min-width: 600px) and (max-width: 1024px) {
-    .navbar-links {
-        display: none;
-    }
     .navbar-burger {
         display: flex;
     }
@@ -430,6 +497,6 @@
 /* Escritorio (desde 1024px en adelante) */
 @media only screen and (min-width: 1024px) {
     .navbar-burger {
-        display: none;
+        
     }
 }

@@ -1,6 +1,6 @@
 .header {
     position: relative;
-    background-color: var(--primary-color);
+    background: linear-gradient(125deg, var(--background-color-gray), var(--background-color-gray-hover));
 }
 
 .header-content {

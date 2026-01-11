@@ -19,6 +19,7 @@ export default function OrdenDetalle() {
             try {
                 setLoading(true)
                 const response = await getOrder(code, user?.email)
+                console.log('🔍 Orden cargada en detalle:', response.data)
                 setOrder(response.data)
             } catch (err) {
                 console.error('Error cargando orden:', err)
@@ -172,7 +173,19 @@ export default function OrdenDetalle() {
                                 <CreditCard size={18} />
                                 <div>
                                     <strong>Método de pago</strong>
-                                    <p>{getPaymentMethodLabel(order.payment_method)}</p>
+                                    <p>
+                                        {order.payment_method === 'card' ? (
+                                            <>
+                                                💳 {order.payment_type_card === 'debit' ? 'Tarjeta Débito' : 'Tarjeta Crédito'}
+                                            </>
+                                        ) : order.payment_method === 'nequi' ? (
+                                            '📱 Nequi'
+                                        ) : order.payment_method === 'cash' ? (
+                                            '💵 Efectivo'
+                                        ) : (
+                                            'No especificado'
+                                        )}
+                                    </p>
                                 </div>
                             </div>
                             {order.sede && (
@@ -193,28 +206,39 @@ export default function OrdenDetalle() {
                                 <User size={18} />
                                 <div>
                                     <strong>Cliente</strong>
-                                    <p>{order.nombre_cliente || `${user?.nombre} ${user?.apellido}` || 'Cliente'}</p>
+                                    <p>{order.nombre_cliente || order.customer_name || `${user?.nombre} ${user?.apellido}` || 'Cliente'}</p>
                                 </div>
                             </div>
-                            {order.email && (
+                            {(order.email || order.customer_email) && (
                                 <div className='detail-row'>
                                     <User size={18} />
                                     <div>
                                         <strong>Email</strong>
-                                        <p>{order.email}</p>
+                                        <p>{order.email || order.customer_email}</p>
                                     </div>
                                 </div>
                             )}
-                            {order.telefono && (
+                            {(order.telefono || order.customer_phone) && (
                                 <div className='detail-row'>
                                     <Phone size={18} />
                                     <div>
                                         <strong>Teléfono</strong>
-                                        <p>{order.telefono}</p>
+                                        <p>{order.telefono || order.customer_phone}</p>
                                     </div>
                                 </div>
                             )}
-                            {order.direccion && (
+                            
+                            {/* Tipo de entrega */}
+                            <div className='detail-row'>
+                                <Package size={18} />
+                                <div>
+                                    <strong>Tipo de entrega</strong>
+                                    <p>{order.delivery_type === 'domicilio' || order.tipo_entrega === 'domicilio' ? 'A Domicilio' : 'Recogida en Sede'}</p>
+                                </div>
+                            </div>
+                            
+                            {/* Mostrar dirección solo si es domicilio */}
+                            {(order.delivery_type === 'domicilio' || order.tipo_entrega === 'domicilio') && order.direccion && (
                                 <div className='detail-row'>
                                     <MapPin size={18} />
                                     <div>
@@ -223,13 +247,6 @@ export default function OrdenDetalle() {
                                     </div>
                                 </div>
                             )}
-                            <div className='detail-row'>
-                                <Package size={18} />
-                                <div>
-                                    <strong>Tipo de entrega</strong>
-                                    <p>{order.tipo_entrega === 'domicilio' ? 'A Domicilio' : 'Recogida en Sede'}</p>
-                                </div>
-                            </div>
                         </div>
 
                         {/* Productos */}
@@ -271,20 +288,37 @@ export default function OrdenDetalle() {
                             <div className='payment-summary'>
                                 <div className='summary-row'>
                                     <span>Subtotal productos:</span>
-                                    <span>{formatPrice(order.subtotal || order.total)}</span>
+                                    <span>{formatPrice(
+                                        order.delivery_cost 
+                                            ? order.total - order.delivery_cost 
+                                            : (order.subtotal || order.total)
+                                    )}</span>
                                 </div>
-                                {order.costo_envio > 0 && (
+                                
+                                {/* Mostrar costo de envío si es domicilio */}
+                                {order.delivery_type === 'domicilio' && order.delivery_cost > 0 && (
                                     <div className='summary-row'>
-                                        <span>Costo de envío:</span>
-                                        <span>{formatPrice(order.costo_envio)}</span>
+                                        <span>Domicilio:</span>
+                                        <span>{formatPrice(order.delivery_cost)}</span>
                                     </div>
                                 )}
-                                {order.tarifa_procesamiento > 0 && (
+                                
+                                {/* Mostrar "Recogida gratis" si es recogida en sede */}
+                                {order.delivery_type === 'recogida' && (
                                     <div className='summary-row'>
-                                        <span>Tarifa de procesamiento:</span>
-                                        <span>{formatPrice(order.tarifa_procesamiento)}</span>
+                                        <span>Recogida en sede:</span>
+                                        <span className='free-delivery'>¡Gratis!</span>
                                     </div>
                                 )}
+                                
+                                {/* Mostrar tarifa de procesamiento para tarjeta/nequi */}
+                                {(order.payment_method === 'card' || order.payment_method === 'nequi') && order.processing_fee > 0 && (
+                                    <div className='summary-row'>
+                                        <span>Tarifa procesamiento (2.65% + $700 + IVA):</span>
+                                        <span>{formatPrice(order.processing_fee)}</span>
+                                    </div>
+                                )}
+                                
                                 <div className='summary-row total'>
                                     <strong>Total:</strong>
                                     <strong>{formatPrice(order.total)}</strong>

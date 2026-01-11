@@ -5,7 +5,9 @@ import {
     Edit2, 
     Trash2, 
     Image as ImageIcon,
-    X 
+    X,
+    ChevronDown,
+    ChevronUp
 } from 'lucide-react';
 import { useDashboardProducts } from '../../../hooks/Dashboard/useDashboardProducts';
 import { useDashboardGrupos } from '../../../hooks/Dashboard/useDashboardGrupos';
@@ -57,6 +59,7 @@ export function ProductosCRUD() {
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [creatingGroup, setCreatingGroup] = useState(false);
+    const [expandedProduct, setExpandedProduct] = useState(null); // Para controlar qué producto tiene tamaños expandidos
 
     const stats = getStats();
     const filteredProductos = filterProductos(searchTerm, filterCategoria, filterEstado);
@@ -573,72 +576,120 @@ export function ProductosCRUD() {
                 </tr>
             </thead>
             <tbody>
-                {filteredProductos.map(producto => (
-                <tr key={producto.id}>
-                    <td>
-                    <div className="product-image">
-                        {producto.imagen_url ? (
-                        <ImageWithSkeleton 
-                            src={producto.imagen_url} 
-                            alt={producto.nombre}
-                            className="dashboard-product-img"
-                        />
-                        ) : (
-                        <div className="product-image-placeholder">
-                            <ImageIcon size={24} />
-                        </div>
-                        )}
-                    </div>
-                    </td>
-                    <td>
-                    <div className="product-info">
-                        <strong>{producto.nombre}</strong>
-                        {producto.descripcion && (
-                        <p className="product-description">{producto.descripcion}</p>
-                        )}
-                    </div>
-                    </td>
-                    <td>
-                    <span className={`dashboard-badge dashboard-badge-${producto.type?.toLowerCase() || 'producto'}`}>
-                        {producto.type || 'Producto'}
-                    </span>
-                    </td>
-                    <td>
-                    <strong>${producto.precio?.toLocaleString('es-CO')}</strong>
-                    </td>
-                    <td>
-                    <label className="toggle-switch">
-                        <input
-                        type="checkbox"
-                        checked={producto.disponible}
-                        onChange={() => handleToggleDisponible(producto)}
-                        />
-                        <span className="toggle-slider"></span>
-                    </label>
-                    <span className={`status-text ${producto.disponible ? 'available' : 'unavailable'}`}>
-                        {producto.disponible ? 'Disponible' : 'No disponible'}
-                    </span>
-                    </td>
-                    <td>
-                    <div className="action-buttons">
-                        <button
-                        className="dashboard-btn-icon dashboard-btn-edit"
-                        onClick={() => handleOpenModal(producto)}
-                        title="Editar"
-                        >
-                        <Edit2 size={18} />
-                        </button>
-                        <button
-                        className="dashboard-btn-icon dashboard-btn-delete"
-                        onClick={() => handleDelete(producto.id)}
-                        title="Eliminar"
-                        >
-                        <Trash2 size={18} />
-                        </button>
-                    </div>
-                    </td>
-                </tr>
-                ))}
+                {filteredProductos.map(producto => {
+                    const tieneTamanos = producto.tamanos_disponibles && producto.tamanos_disponibles.length > 0;
+                    const isExpanded = expandedProduct === producto.id;
+                    
+                    return (
+                        <>
+                            <tr key={producto.id}>
+                                <td>
+                                    <div className="product-image">
+                                        {producto.imagen_url ? (
+                                            <ImageWithSkeleton 
+                                                src={producto.imagen_url} 
+                                                alt={producto.nombre}
+                                                className="dashboard-product-img"
+                                            />
+                                        ) : (
+                                            <div className="product-image-placeholder">
+                                                <ImageIcon size={24} />
+                                            </div>
+                                        )}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className="product-info">
+                                        <strong>{producto.nombre}</strong>
+                                        {producto.descripcion && (
+                                            <p className="product-description">{producto.descripcion}</p>
+                                        )}
+                                        {tieneTamanos && (
+                                            <button 
+                                                className="btn-sizes"
+                                                onClick={() => setExpandedProduct(isExpanded ? null : producto.id)}
+                                            >
+                                                {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                                                {producto.tamanos_disponibles.length} tamaños
+                                            </button>
+                                        )}
+                                    </div>
+                                </td>
+                                <td>
+                                    <span className={`dashboard-badge dashboard-badge-${producto.type?.toLowerCase() || 'producto'}`}>
+                                        {producto.type || 'Producto'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong>${producto.precio?.toLocaleString('es-CO')}</strong>
+                                    {tieneTamanos && <p className="price-note">Precio base</p>}
+                                </td>
+                                <td>
+                                    <label className="toggle-switch">
+                                        <input
+                                            type="checkbox"
+                                            checked={producto.disponible}
+                                            onChange={() => handleToggleDisponible(producto)}
+                                        />
+                                        <span className="toggle-slider"></span>
+                                    </label>
+                                    <span className={`status-text ${producto.disponible ? 'available' : 'unavailable'}`}>
+                                        {producto.disponible ? 'Disponible' : 'No disponible'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div className="action-buttons">
+                                        <button
+                                            className="dashboard-btn-icon dashboard-btn-edit"
+                                            onClick={() => handleOpenModal(producto)}
+                                            title="Editar"
+                                        >
+                                            <Edit2 size={18} />
+                                        </button>
+                                        <button
+                                            className="dashboard-btn-icon dashboard-btn-delete"
+                                            onClick={() => handleDelete(producto.id)}
+                                            title="Eliminar"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            {/* Fila expandible con tamaños */}
+                            {tieneTamanos && isExpanded && (
+                                <tr key={`${producto.id}-sizes`} className="sizes-expanded-row">
+                                    <td colSpan="6">
+                                        <div className="sizes-container">
+                                            <h4>Tamaños y precios</h4>
+                                            <div className="sizes-grid">
+                                                {producto.tamanos_disponibles.map(tamano => (
+                                                    <div key={`${producto.id}-${tamano}`} className="size-item">
+                                                        <div className="size-info">
+                                                            <span className="size-badge">{tamano}</span>
+                                                            <span className="size-price">
+                                                                ${(producto.precios_por_tamano?.[tamano] || producto.precio)?.toLocaleString('es-CO')}
+                                                            </span>
+                                                        </div>
+                                                        <label className="toggle-switch">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={producto.disponible}
+                                                                onChange={() => handleToggleDisponible(producto)}
+                                                            />
+                                                            <span className="toggle-slider"></span>
+                                                        </label>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                        </>
+                    );
+                })}
             </tbody>
             </table>
 

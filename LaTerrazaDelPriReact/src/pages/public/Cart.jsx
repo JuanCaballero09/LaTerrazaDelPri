@@ -9,7 +9,7 @@ import useUserAddresses from '../../hooks/useUserAddresses';
 import { createAddress } from '../../api/users.api';
 import { MapPin, Save, MapPinned } from 'lucide-react';
 import { loadGoogleMapsAPI, initializePlaceAutocomplete, calculateDistanceHaversine, calculateDeliveryCost, getDirections } from '../../utils/googleMaps';
-import { ShoppingBasket } from 'lucide-react';
+import { ShoppingBasket, Motorbike, Store } from 'lucide-react';
 import ImgDefault  from '../../assets/images/ImagenNoDisponible4-3.png'
 import './Cart.css';
 
@@ -393,7 +393,7 @@ export default function CartPage() {
                                             checked={deliveryType === 'domicilio'} 
                                             onChange={(e) => setDeliveryType(e.target.value)} 
                                         />
-                                        <span>🛵 Domicilio</span>
+                                        <span><Motorbike /> Domicilio</span>
                                     </label>
                                     <label className={`delivery-option ${deliveryType === 'recogida' ? 'selected' : ''}`}>
                                         <input 
@@ -406,7 +406,7 @@ export default function CartPage() {
                                                 setDeliveryCost(0);
                                             }} 
                                         />
-                                        <span>🏪 Recoger en sede</span>
+                                        <span><Store /> Recoger en sede</span>
                                     </label>
                                 </div>
                                 <br />
@@ -417,19 +417,7 @@ export default function CartPage() {
                                             <button 
                                                 type="button" 
                                                 onClick={() => setShowSavedAddresses(!showSavedAddresses)}
-                                                style={{
-                                                    width: '100%',
-                                                    padding: '8px',
-                                                    marginBottom: '8px',
-                                                    background: '#f8f9fa',
-                                                    border: '1px solid #dee2e6',
-                                                    borderRadius: '6px',
-                                                    cursor: 'pointer',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '8px',
-                                                    justifyContent: 'center'
-                                                }}
+                                                className='btn-address'
                                             >
                                                 <MapPinned size={18} />
                                                 {showSavedAddresses ? 'Ocultar' : 'Ver'} direcciones guardadas ({addresses.length})
@@ -513,21 +501,21 @@ export default function CartPage() {
                                                     disabled={savingAddress || isAddressDisabled}
                                                     style={{background: savingAddress ? '#ccc' : '#28a745'}}
                                                 >
-                                                    <Save size={18} />
+                                                    <Save />
                                                 </button>
                                             )}
                                         </div>
                                         {!googleMapsReady && <small style={{color: '#999'}}>Cargando Google Maps...</small>}
                                         {user && !loadingAddresses && addresses.length === 0 && address && addressData && (
                                             <small style={{color: '#666', display: 'block', marginTop: '8px'}}>
-                                                💡 Puedes guardar esta dirección para usarla después
+                                                Puedes guardar esta dirección para usarla después
                                             </small>
                                         )}
                                     </>
                                 )}
                                 {deliveryType === 'recogida' && (
                                     <div className="pickup-info">
-                                        <p>📍 Recoge tu pedido en:</p>
+                                        <p>Recoge tu pedido en:</p>
                                         <strong>{selectedSede?.nombre}</strong>
                                         <p style={{fontSize: '0.9em', color: '#666'}}>{selectedSede?.direccion}, {selectedSede?.municipio}</p>
                                     </div>

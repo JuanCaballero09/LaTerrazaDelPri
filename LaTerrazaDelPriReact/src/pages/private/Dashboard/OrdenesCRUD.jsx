@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDashboardOrders } from '../../../hooks/Dashboard/useDashboardOrders';
-import { Package, MapPin, Clock, ChefHat, X, CheckCircle, Store, Bell, ReceiptText, Check, User, Phone, CreditCard, Home, Truck, DollarSign, ShoppingBag } from 'lucide-react';
+import { Package, MapPin, Clock, ChefHat, X, CheckCircle, Store, Bell, ReceiptText, Check, User, Phone, CreditCard, Home, Truck, Wallet, ShoppingBag, Banknote } from 'lucide-react';
 import './Dashboard.css';
 
 export function OrdenesCRUD() {
@@ -114,7 +114,7 @@ export function OrdenesCRUD() {
       {/* Filters */}
       <div className="crud-filters">
         <div className="filter-group">
-          <label><Store size={16} /> Sede:</label>
+          <label style={{width: "fit-content"}}><Store size={16} /> Sede:</label>
           <select
             value={filterSede}
             onChange={(e) => setFilterSede(e.target.value)}
@@ -159,7 +159,7 @@ export function OrdenesCRUD() {
             <ChefHat size={24} />
           </div>
           <div className="stat-content">
-            <h3>En Preparación</h3>
+            <h3>Ordenes Tomadas</h3>
             <p className="stat-value">{stats.enPreparacion || 0}</p>
           </div>
         </div>
@@ -202,14 +202,14 @@ export function OrdenesCRUD() {
             const isProcessing = processingOrder === orden.code;
             
             return (
-              <div key={orden.code} className={`orden-card ${isProcessing ? 'processing' : ''}`}>
+              <div key={orden.code} className={`orden-card ${isProcessing ? 'processing' : ''} ${orden.payment_method === 'cash' ? 'cash-payment' : ''}`}>
                 <div className="orden-card-header">
                   <div className="orden-code">
                     <Package size={20} />
                     <strong>#{orden.code}</strong>
                   </div>
                   <div className={`status-badge ${badge.class}`}>
-                    {badge.icon} {badge.label}
+                    {badge.label}
                   </div>
                 </div>
 
@@ -255,8 +255,11 @@ export function OrdenesCRUD() {
                 </div>
 
                 <div className="orden-total">
-                  <span><DollarSign size={18} /> Total:</span>
-                  <strong>${parseFloat(orden.total).toLocaleString('es-CO')}</strong>
+                  <span><Wallet size={18} /> Total:</span>
+                  <strong>
+                    ${parseFloat(orden.total).toLocaleString('es-CO')}
+                    {orden.payment_method === 'cash' && <span className="cash-badge"><Banknote size={14} /> COBRAR</span>}
+                  </strong>
                 </div>
 
                 <div className="orden-card-actions">
@@ -304,12 +307,12 @@ export function OrdenesCRUD() {
             <div className="orden-detail-body">
               <div className="detail-section">
                 <div className={`status-badge ${getEstadoBadge(selectedOrden.status).class}`}>
-                  {getEstadoBadge(selectedOrden.status).icon} {getEstadoBadge(selectedOrden.status).label}
+                  {getEstadoBadge(selectedOrden.status).label}
                 </div>
               </div>
 
               <div className="detail-section">
-                <h3>👤 Información del Cliente</h3>
+                <h3>Información del Cliente</h3>
                 <div className="detail-grid">
                   <div className="detail-item">
                     <span className="detail-label">Nombre:</span>
@@ -323,12 +326,12 @@ export function OrdenesCRUD() {
               </div>
 
               <div className="detail-section">
-                <h3>🚚 Información de Entrega</h3>
+                <h3>Información de Entrega</h3>
                 <div className="detail-grid">
                   <div className="detail-item">
                     <span className="detail-label">Tipo:</span>
                     <span className="detail-value">
-                      {selectedOrden.delivery_type === 'recogida' ? '🏪 Recoger en sede' : '🛵 Domicilio'}
+                      {selectedOrden.delivery_type === 'recogida' ? 'Recoger en sede' : 'Domicilio'}
                     </span>
                   </div>
                   {selectedOrden.delivery_type === 'domicilio' && (
@@ -340,13 +343,25 @@ export function OrdenesCRUD() {
                   <div className="detail-item">
                     <span className="detail-label">Método de Pago:</span>
                     <span className="detail-value">
-                      {selectedOrden.payment_method === 'card'
-                        ? (selectedOrden.payment_type_card === 'debit' ? '<CreditCard /> Tarjeta Débito' : '<CreditCard /> Tarjeta Crédito')
-                        : selectedOrden.payment_method === 'nequi' 
-                          ? '📱 Nequi'
-                          : selectedOrden.payment_method === 'cash'
-                            ? '💵  Efectivo'
-                            : 'N/A'}
+                      {selectedOrden.payment_method === 'card' ? (
+                        <>
+                          <CreditCard size={16} style={{ marginRight: '6px', display: 'inline-block', verticalAlign: 'middle' }} />
+                          {selectedOrden.payment_type_card === 'debit' ? 'Tarjeta Débito' : 'Tarjeta Crédito'}
+                        </>
+                      ) : selectedOrden.payment_method === 'nequi' ? (
+                        <>
+                          <img 
+                            src="/NequiLogo.png" 
+                            alt="Nequi" 
+                            style={{ width: '20px', height: '20px', marginRight: '6px', display: 'inline-block', verticalAlign: 'middle' }}
+                          />
+                          Nequi
+                        </>
+                      ) : selectedOrden.payment_method === 'cash' ? (
+                        '💵 Efectivo'
+                      ) : (
+                        'N/A'
+                      )}
                     </span>
                   </div>
                 </div>
@@ -383,21 +398,42 @@ export function OrdenesCRUD() {
               <div className="detail-section totals">
                 <div className="totales-grid">
                   <div className="total-row">
-                    <span>Subtotal:</span>
-                    <span>${parseFloat(selectedOrden.subtotal || selectedOrden.total).toLocaleString('es-CO')} COP</span>
+                    <span>Subtotal productos:</span>
+                    <span>${parseFloat(
+                      selectedOrden.delivery_cost 
+                        ? selectedOrden.total - selectedOrden.delivery_cost 
+                        : (selectedOrden.subtotal || selectedOrden.total)
+                    ).toLocaleString('es-CO')} COP</span>
                   </div>
-                  {selectedOrden.costo_domicilio > 0 && (
+                  
+                  {selectedOrden.delivery_type === 'domicilio' && selectedOrden.delivery_cost > 0 && (
                     <div className="total-row">
                       <span>Domicilio:</span>
-                      <span>${parseFloat(selectedOrden.costo_domicilio).toLocaleString('es-CO')} COP</span>
+                      <span>${parseFloat(selectedOrden.delivery_cost).toLocaleString('es-CO')} COP</span>
                     </div>
                   )}
+                  
+                  {selectedOrden.delivery_type === 'recogida' && (
+                    <div className="total-row">
+                      <span>Recogida en sede:</span>
+                      <span className="free-delivery">¡Gratis!</span>
+                    </div>
+                  )}
+                  
+                  {(selectedOrden.payment_method === 'card' || selectedOrden.payment_method === 'nequi') && selectedOrden.processing_fee > 0 && (
+                    <div className="total-row">
+                      <span>Tarifa Wompi (2.65% + $700 + IVA):</span>
+                      <span>${parseFloat(selectedOrden.processing_fee).toLocaleString('es-CO')} COP</span>
+                    </div>
+                  )}
+                  
                   {(selectedOrden.descuento && selectedOrden.descuento > 0) && (
                     <div className="total-row">
                       <span>Descuento:</span>
                       <span className="descuento">-${parseFloat(selectedOrden.descuento).toLocaleString('es-CO')} COP</span>
                     </div>
                   )}
+                  
                   <div className="total-row final">
                     <span><strong>Total:</strong></span>
                     <span><strong>${parseFloat(selectedOrden.total).toLocaleString('es-CO')} COP</strong></span>
